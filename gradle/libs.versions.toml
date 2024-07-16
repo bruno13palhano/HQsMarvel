@@ -23,6 +23,7 @@ sqlDelight = "2.0.2"
 navVersion = "2.8.0-beta05"
 serializationVersion = "1.7.0"
 ktlintVersion = "12.1.1"
+coilVersion = "2.5.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -54,6 +55,7 @@ android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = 
 coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelight" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navVersion" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationVersion" }
+coil = { module = "io.coil-kt:coil-compose", version.ref = "coilVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

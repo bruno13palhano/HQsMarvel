@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.android.driver)
     implementation(libs.coroutines.extensions)
+    implementation(libs.paging.runtime)
 }
 
 tasks.getByName("preBuild").dependsOn(":data:generateSqlDelightInterface")

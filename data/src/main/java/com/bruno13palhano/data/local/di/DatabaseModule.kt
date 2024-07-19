@@ -1,10 +1,11 @@
 package com.bruno13palhano.data.local.di
 
 import android.content.Context
-import cache.FavoriteComicsQueries
-import com.bruno13palhano.cache.AppDatabase
-import com.bruno13palhano.data.local.database.DatabaseFactory
-import com.bruno13palhano.data.local.database.DriverFactory
+import androidx.room.Room
+import com.bruno13palhano.data.local.data.ComicsDao
+import com.bruno13palhano.data.local.data.FavoriteComicsDao
+import com.bruno13palhano.data.local.data.RemoteKeysDao
+import com.bruno13palhano.data.local.database.HQsMarvelDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,13 +18,27 @@ import javax.inject.Singleton
 internal object DatabaseModule {
     @Provides
     @Singleton
-    fun provideDatabase(
-        @ApplicationContext context: Context
-    ): AppDatabase {
-        return DatabaseFactory(driverFactory = DriverFactory(context)).createDatabase()
-    }
+    fun provideComicsDao(database: HQsMarvelDatabase): ComicsDao = database.comicsDao
 
     @Provides
     @Singleton
-    fun provideFavoriteComicsTable(database: AppDatabase): FavoriteComicsQueries = database.favoriteComicsQueries
+    fun provideRemoteKeysDao(database: HQsMarvelDatabase): RemoteKeysDao = database.remoteKeysDao
+
+    @Provides
+    @Singleton
+    fun provideFavoriteComicsDao(database: HQsMarvelDatabase): FavoriteComicsDao = database.favoriteComicsDao
+
+    @Provides
+    @Singleton
+    fun provideHQsMarvelDatabase(
+        @ApplicationContext context: Context
+    ): HQsMarvelDatabase {
+        return Room.databaseBuilder(
+            context,
+            HQsMarvelDatabase::class.java,
+            "HQsMarvel.db"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
+    }
 }

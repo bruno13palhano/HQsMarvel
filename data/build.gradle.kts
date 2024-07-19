@@ -1,14 +1,11 @@
-import app.cash.sqldelight.core.capitalize
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.secrets)
-    alias(libs.plugins.sqldelight)
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
 android {
@@ -44,14 +41,6 @@ android {
     }
 }
 
-sqldelight {
-    databases {
-        create("AppDatabase") {
-            packageName.set("com.bruno13palhano.cache")
-        }
-    }
-}
-
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -67,20 +56,10 @@ dependencies {
     implementation(libs.converter.moshi)
     implementation(libs.okhttp)
     implementation(libs.hilt.android)
-    implementation(libs.android.driver)
-    implementation(libs.coroutines.extensions)
     implementation(libs.paging.runtime)
-}
-
-tasks.getByName("preBuild").dependsOn(":data:generateSqlDelightInterface")
-
-androidComponents {
-    onVariants(selector().all()) { variant ->
-        afterEvaluate {
-            val variantName = variant.name.capitalize()
-            tasks.getByName<KotlinCompile>("ksp${variantName}Kotlin") {
-                setSource(tasks.getByName("generate${variantName}AppDatabaseInterface").outputs)
-            }
-        }
-    }
+    ksp(libs.room.runtime)
+    ksp(libs.room.compiler)
+    implementation(libs.room.coroutines)
+    implementation(libs.room.paging)
+    implementation(libs.kotlinx.serialization.json)
 }

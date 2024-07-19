@@ -25,6 +25,8 @@ serializationVersion = "1.7.0"
 ktlintVersion = "12.1.1"
 coilVersion = "2.6.0"
 pagingVersion = "3.3.0"
+roomVersion = "2.6.1"
+materialIconsExtended = "1.6.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -52,13 +54,16 @@ hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", ve
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltCompiler" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltCompiler" }
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltWork" }
-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelight" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navVersion" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationVersion" }
 coil = { module = "io.coil-kt:coil-compose", version.ref = "coilVersion" }
 paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "pagingVersion" }
 paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingVersion" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
+room-coroutines = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
+room-paging = { module = "androidx.room:room-paging", version.ref = "roomVersion" }
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -68,7 +73,6 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroidCompiler"}
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsGradle" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
-sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
 safe-args = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navVersion" }
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintVersion" }

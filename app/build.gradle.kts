@@ -81,4 +81,5 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.coil)
     implementation(libs.paging.compose)
+    implementation(libs.androidx.material.icons.extended)
 }

@@ -13,3 +13,6 @@ INSERT OR REPLACE INTO FavoriteComics (id, title, description, thumbnail) VALUES
 
 removeFavorite:
 DELETE FROM FavoriteComics WHERE id = ?;
+
+removeAll:
+DELETE FROM FavoriteComics;

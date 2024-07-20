@@ -6,21 +6,19 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@Entity(tableName = "Comics")
-data class Comic(
+@Entity(tableName = "RemoteKeys")
+data class RemoteKeys(
     @PrimaryKey(autoGenerate = true)
     @SerialName("id")
     val id: Long = 0L,
     @SerialName("comicId")
     val comicId: Long,
-    @SerialName("title")
-    val title: String?,
-    @SerialName("description")
-    val description: String?,
-    @SerialName("thumbnail")
-    val thumbnail: String?,
-    @SerialName("page")
-    val page: Int,
-    @SerialName("isFavorite")
-    val isFavorite: Boolean
+    @SerialName("prevKey")
+    val prevKey: Int?,
+    @SerialName("currentPage")
+    val currentPage: Int,
+    @SerialName("nextKey")
+    val nextKey: Int?,
+    @SerialName("createAt")
+    val createAt: Long
 )

@@ -6,21 +6,15 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@Entity(tableName = "Comics")
-data class Comic(
-    @PrimaryKey(autoGenerate = true)
+@Entity(tableName = "FavoriteComics")
+data class FavoriteComic(
+    @PrimaryKey
     @SerialName("id")
-    val id: Long = 0L,
-    @SerialName("comicId")
-    val comicId: Long,
+    val id: Long,
     @SerialName("title")
     val title: String?,
     @SerialName("description")
     val description: String?,
     @SerialName("thumbnail")
-    val thumbnail: String?,
-    @SerialName("page")
-    val page: Int,
-    @SerialName("isFavorite")
-    val isFavorite: Boolean
+    val thumbnail: String?
 )

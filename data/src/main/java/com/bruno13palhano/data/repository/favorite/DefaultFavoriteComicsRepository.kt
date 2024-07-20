@@ -1,25 +1,24 @@
 package com.bruno13palhano.data.repository.favorite
 
-import com.bruno13palhano.data.local.data.FavoriteComicsLocalData
-import com.bruno13palhano.data.local.di.FavoriteComicsLocal
-import com.bruno13palhano.data.model.Comic
+import com.bruno13palhano.data.local.data.FavoriteComicsDao
+import com.bruno13palhano.data.model.FavoriteComic
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 internal class DefaultFavoriteComicsRepository
     @Inject
     constructor(
-        @FavoriteComicsLocal private val favoriteComicsLocal: FavoriteComicsLocalData
+        private val favoriteComics: FavoriteComicsDao
     ) : FavoriteComicsRepository {
-        override fun getComics(): Flow<List<Comic>> {
-            return favoriteComicsLocal.getComics()
+        override fun getComics(): Flow<List<FavoriteComic>> {
+            return favoriteComics.getAll()
         }
 
-        override suspend fun saveFavorite(comic: Comic) {
-            favoriteComicsLocal.saveFavorite(comic = comic)
+        override suspend fun saveFavorite(favoriteComic: FavoriteComic) {
+            favoriteComics.insert(favoriteComic = favoriteComic)
         }
 
         override suspend fun removeFavorite(id: Long) {
-            favoriteComicsLocal.removeFavorite(id = id)
+            favoriteComics.delete(id = id)
         }
     }

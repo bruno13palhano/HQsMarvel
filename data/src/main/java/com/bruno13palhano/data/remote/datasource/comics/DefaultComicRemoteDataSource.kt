@@ -15,11 +15,13 @@ internal class DefaultComicRemoteDataSource
         ): List<Comic> {
             return service.getComics(offset = offset, limit = limit).data.results.map { comic ->
                 Comic(
-                    id = comic.id,
+                    comicId = comic.id,
                     title = comic.title ?: "",
                     description = comic.description ?: "",
                     thumbnail =
-                        (comic.thumbnail?.path ?: "") + "." + (comic.thumbnail?.extension ?: "")
+                        (comic.thumbnail?.path ?: "") + "." + (comic.thumbnail?.extension ?: ""),
+                    page = 0,
+                    isFavorite = false
                 )
             }
         }

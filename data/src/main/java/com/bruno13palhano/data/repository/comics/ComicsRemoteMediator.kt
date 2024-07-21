@@ -21,7 +21,7 @@ internal class ComicsRemoteMediator(
     private val comicRemoteDataSource: ComicRemoteDataSource
 ) : RemoteMediator<Int, Comic>() {
     override suspend fun initialize(): InitializeAction {
-        val cacheTimeout = TimeUnit.MILLISECONDS.convert(3, TimeUnit.MINUTES)
+        val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS)
 
         return if (System.currentTimeMillis() - (database.remoteKeysDao.getCreationTime() ?: 0) < cacheTimeout) {
             InitializeAction.SKIP_INITIAL_REFRESH

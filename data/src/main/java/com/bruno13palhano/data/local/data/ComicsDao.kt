@@ -28,16 +28,12 @@ internal interface ComicsDao {
     @Query("SELECT * FROM Comics WHERE isFavorite = 1")
     fun getFavoriteComics(): Flow<List<Comic>>
 
-    @Query("SELECT * FROM Comics WHERE comicId = :comicId AND page = :page AND isFavorite = 1")
-    fun getFavoriteComicById(
-        comicId: Long,
-        page: Int
-    ): Flow<Comic>
+    @Query("SELECT * FROM Comics WHERE comicId = :comicId AND isFavorite = 1")
+    fun getFavoriteComicById(comicId: Long): Flow<Comic>
 
-    @Query("UPDATE Comics SET isFavorite = :isFavorite WHERE comicId = :comicId AND page = :page")
+    @Query("UPDATE Comics SET isFavorite = :isFavorite WHERE comicId = :comicId")
     suspend fun updateFavorite(
         comicId: Long,
-        page: Int,
         isFavorite: Boolean
     )
 }

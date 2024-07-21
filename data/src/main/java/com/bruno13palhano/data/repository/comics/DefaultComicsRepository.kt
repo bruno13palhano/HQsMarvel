@@ -32,11 +32,8 @@ internal class DefaultComicsRepository
             ).flow
         }
 
-        override fun getFavoriteComicById(
-            id: Long,
-            page: Int
-        ): Flow<Comic> {
-            return comicDao.getFavoriteComicById(comicId = id, page = page)
+        override fun getFavoriteComicById(id: Long): Flow<Comic> {
+            return comicDao.getFavoriteComicById(comicId = id)
         }
 
         override fun getFavoriteComics(): Flow<List<Comic>> {
@@ -45,9 +42,8 @@ internal class DefaultComicsRepository
 
         override suspend fun updateComicFavorite(
             id: Long,
-            page: Int,
             isFavorite: Boolean
         ) {
-            return comicDao.updateFavorite(comicId = id, page = page, isFavorite = isFavorite)
+            return comicDao.updateFavorite(comicId = id, isFavorite = isFavorite)
         }
     }

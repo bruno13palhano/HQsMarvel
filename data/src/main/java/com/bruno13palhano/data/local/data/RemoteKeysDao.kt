@@ -31,4 +31,7 @@ internal interface RemoteKeysDao {
 
     @Query("SELECT createAt FROM remotekeys ORDER BY createAt DESC LIMIT 1")
     suspend fun getCreationTime(): Long?
+
+    @Query("SELECT currentPage FROM RemoteKeys ORDER BY currentPage DESC LIMIT 1")
+    suspend fun getCurrentPage(): Int?
 }

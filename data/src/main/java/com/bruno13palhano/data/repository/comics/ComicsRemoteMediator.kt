@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalPagingApi::class)
 internal class ComicsRemoteMediator(
-    private var offset: Int = 0,
     private val limit: Int = 15,
     private val database: HQsMarvelDatabase,
     private val comicRemoteDataSource: ComicRemoteDataSource
@@ -53,6 +52,9 @@ internal class ComicsRemoteMediator(
             }
 
         try {
+            val currentPage = getCurrentPage() ?: 0
+
+            var offset = currentPage * limit
             val response = comicRemoteDataSource.getComics(offset, state.config.pageSize)
             val endOfPaginationReached = response.isEmpty()
 
@@ -110,5 +112,9 @@ internal class ComicsRemoteMediator(
         return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()?.let { comic ->
             database.remoteKeysDao.remoteKeyId(comicId = comic.comicId, page = comic.page)
         }
+    }
+
+    private suspend fun getCurrentPage(): Int? {
+        return database.remoteKeysDao.getCurrentPage()
     }
 }

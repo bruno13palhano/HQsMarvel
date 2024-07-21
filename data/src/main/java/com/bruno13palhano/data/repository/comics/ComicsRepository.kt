@@ -7,5 +7,16 @@ import kotlinx.coroutines.flow.Flow
 interface ComicsRepository {
     fun getComics(): Flow<PagingData<Comic>>
 
-    suspend fun addToFavorite(comic: Comic)
+    fun getFavoriteComicById(
+        id: Long,
+        page: Int
+    ): Flow<Comic>
+
+    fun getFavoriteComics(): Flow<List<Comic>>
+
+    suspend fun updateComicFavorite(
+        id: Long,
+        page: Int,
+        isFavorite: Boolean
+    )
 }

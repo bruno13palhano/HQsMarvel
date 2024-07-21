@@ -5,10 +5,8 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.bruno13palhano.data.local.data.ComicsDao
-import com.bruno13palhano.data.local.data.FavoriteComicsDao
 import com.bruno13palhano.data.local.database.HQsMarvelDatabase
 import com.bruno13palhano.data.model.Comic
-import com.bruno13palhano.data.model.FavoriteComic
 import com.bruno13palhano.data.remote.datasource.comics.ComicRemoteDataSource
 import com.bruno13palhano.data.remote.di.DefaultComicRemote
 import kotlinx.coroutines.flow.Flow
@@ -19,13 +17,12 @@ internal class DefaultComicsRepository
     constructor(
         @DefaultComicRemote private val comicRemoteDataSource: ComicRemoteDataSource,
         private val database: HQsMarvelDatabase,
-        private val comicDao: ComicsDao,
-        private val favoriteComicsDao: FavoriteComicsDao
+        private val comicDao: ComicsDao
     ) : ComicsRepository {
         @OptIn(ExperimentalPagingApi::class)
         override fun getComics(): Flow<PagingData<Comic>> {
             return Pager(
-                config = PagingConfig(pageSize = 15, prefetchDistance = 0, initialLoadSize = 15),
+                config = PagingConfig(pageSize = 15, enablePlaceholders = false),
                 pagingSourceFactory = { comicDao.getAll() },
                 remoteMediator =
                     ComicsRemoteMediator(
@@ -35,15 +32,22 @@ internal class DefaultComicsRepository
             ).flow
         }
 
-        override suspend fun addToFavorite(comic: Comic) {
-            favoriteComicsDao.insert(
-                favoriteComic =
-                    FavoriteComic(
-                        id = comic.id,
-                        title = comic.title,
-                        description = comic.description,
-                        thumbnail = comic.thumbnail
-                    )
-            )
+        override fun getFavoriteComicById(
+            id: Long,
+            page: Int
+        ): Flow<Comic> {
+            return comicDao.getFavoriteComicById(comicId = id, page = page)
+        }
+
+        override fun getFavoriteComics(): Flow<List<Comic>> {
+            return comicDao.getFavoriteComics()
+        }
+
+        override suspend fun updateComicFavorite(
+            id: Long,
+            page: Int,
+            isFavorite: Boolean
+        ) {
+            return comicDao.updateFavorite(comicId = id, page = page, isFavorite = isFavorite)
         }
     }

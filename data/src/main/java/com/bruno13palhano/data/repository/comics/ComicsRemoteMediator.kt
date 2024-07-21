@@ -15,12 +15,13 @@ import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalPagingApi::class)
 internal class ComicsRemoteMediator(
+    private var offset: Int = 0,
     private val limit: Int = 15,
     private val database: HQsMarvelDatabase,
     private val comicRemoteDataSource: ComicRemoteDataSource
 ) : RemoteMediator<Int, Comic>() {
     override suspend fun initialize(): InitializeAction {
-        val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS)
+        val cacheTimeout = TimeUnit.MILLISECONDS.convert(3, TimeUnit.MINUTES)
 
         return if (System.currentTimeMillis() - (database.remoteKeysDao.getCreationTime() ?: 0) < cacheTimeout) {
             InitializeAction.SKIP_INITIAL_REFRESH
@@ -52,14 +53,18 @@ internal class ComicsRemoteMediator(
             }
 
         try {
-            val offset = (page - 1) * limit
-
-            val response = comicRemoteDataSource.getComics(offset, limit)
+            val response = comicRemoteDataSource.getComics(offset, state.config.pageSize)
             val endOfPaginationReached = response.isEmpty()
+
+            offset += limit
 
             database.withTransaction {
                 if (loadType == LoadType.REFRESH) {
-                    database.remoteKeysDao.clearRemoteKeys()
+                    database.comicsDao.getComics().map {
+                        if (!it.isFavorite) {
+                            database.remoteKeysDao.deleteById(comicId = it.comicId, it.page)
+                        }
+                    }
                     database.comicsDao.clearComics()
                 }
                 val prevKey = if (page > 1) page - 1 else null
@@ -74,6 +79,7 @@ internal class ComicsRemoteMediator(
                             createAt = System.currentTimeMillis()
                         )
                     }
+
                 database.remoteKeysDao.insertAll(remoteKeys = remoteKeys)
                 database.comicsDao.insertAll(comics = response.map { it.copy(page = page) })
             }
@@ -88,21 +94,21 @@ internal class ComicsRemoteMediator(
 
     private suspend fun getRemoteKeyClosestToCurrentPosition(state: PagingState<Int, Comic>): RemoteKeys? {
         return state.anchorPosition?.let { position ->
-            state.closestItemToPosition(position)?.id?.let { id ->
-                database.remoteKeysDao.remoteKeyId(id = id)
+            state.closestItemToPosition(position)?.let { comic ->
+                database.remoteKeysDao.remoteKeyId(comicId = comic.comicId, page = comic.page)
             }
         }
     }
 
     private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, Comic>): RemoteKeys? {
         return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()?.let { comic ->
-            database.remoteKeysDao.remoteKeyId(id = comic.id)
+            database.remoteKeysDao.remoteKeyId(comicId = comic.comicId, page = comic.page)
         }
     }
 
     private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, Comic>): RemoteKeys? {
         return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()?.let { comic ->
-            database.remoteKeysDao.remoteKeyId(id = comic.id)
+            database.remoteKeysDao.remoteKeyId(comicId = comic.comicId, page = comic.page)
         }
     }
 }

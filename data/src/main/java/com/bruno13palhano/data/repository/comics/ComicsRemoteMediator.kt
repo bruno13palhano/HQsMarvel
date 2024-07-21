@@ -78,7 +78,7 @@ internal class ComicsRemoteMediator(
                             prevKey = prevKey,
                             currentPage = page,
                             nextKey = next,
-                            createAt = System.currentTimeMillis()
+                            createdAt = System.currentTimeMillis()
                         )
                     }
 

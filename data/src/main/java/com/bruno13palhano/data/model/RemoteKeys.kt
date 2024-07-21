@@ -16,5 +16,5 @@ data class RemoteKeys(
     @SerialName("nextKey")
     val nextKey: Int?,
     @SerialName("createAt")
-    val createAt: Long
+    val createdAt: Long
 )

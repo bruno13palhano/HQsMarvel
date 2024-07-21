@@ -7,7 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-private const val PARAMS = "ts=1&apikey=${BuildConfig.apiPublicKey}&hash=${BuildConfig.apiHash}"
+private const val PARAMS = "ts=${BuildConfig.apiTs}&apikey=${BuildConfig.apiPublicKey}&hash=${BuildConfig.apiHash}"
 
 internal interface Service {
     @GET("comics?$PARAMS")

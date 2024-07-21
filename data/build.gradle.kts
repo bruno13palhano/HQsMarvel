@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.moshi.kotlin)
     implementation(libs.converter.moshi)
     implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
     implementation(libs.hilt.android)
     implementation(libs.paging.runtime)
     ksp(libs.room.runtime)

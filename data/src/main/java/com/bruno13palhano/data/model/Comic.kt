@@ -1,16 +1,12 @@
 package com.bruno13palhano.data.model
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@Entity(tableName = "Comics")
+@Entity(tableName = "Comics", primaryKeys = ["comicId"])
 data class Comic(
-    @PrimaryKey(autoGenerate = true)
-    @SerialName("id")
-    val id: Long = 0L,
     @SerialName("comicId")
     val comicId: Long,
     @SerialName("title")

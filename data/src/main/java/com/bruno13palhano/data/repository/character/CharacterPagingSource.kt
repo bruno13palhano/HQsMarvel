@@ -29,10 +29,8 @@ internal class CharacterPagingSource(
                 nextKey = if (response.isEmpty()) null else currentPage + 1
             )
         } catch (e: Exception) {
-            println(e)
             return LoadResult.Error(e)
         } catch (e: HttpException) {
-            println(e)
             return LoadResult.Error(e)
         }
     }

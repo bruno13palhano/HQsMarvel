@@ -24,7 +24,7 @@ class ComicsLocalDataTest {
     private lateinit var database: TestDatabase
 
     @Before
-    fun createDB() {
+    fun createDatabase() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         database =
             Room.inMemoryDatabaseBuilder(
@@ -37,7 +37,7 @@ class ComicsLocalDataTest {
 
     @After
     @Throws(IOException::class)
-    fun closeDb() {
+    fun closeDatabase() {
         database.close()
     }
 

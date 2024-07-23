@@ -2,8 +2,8 @@ package com.bruno13palhano.data.local.di
 
 import android.content.Context
 import androidx.room.Room
-import com.bruno13palhano.data.local.data.ComicsDao
-import com.bruno13palhano.data.local.data.RemoteKeysDao
+import com.bruno13palhano.data.local.data.dao.ComicsDao
+import com.bruno13palhano.data.local.data.dao.RemoteKeysDao
 import com.bruno13palhano.data.local.database.HQsMarvelDatabase
 import dagger.Module
 import dagger.Provides

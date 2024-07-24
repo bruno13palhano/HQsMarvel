@@ -22,30 +22,26 @@ internal class DefaultMediatorComicLocalData
         ) {
             database.withTransaction {
                 if (isRefresh) {
-                    database.comicsDao.getComics().map {
-                        if (it.isFavorite) {
-                            database.remoteKeysDao.deleteById(comicId = it.comicId)
-                        }
-                    }
                     database.comicsDao.clearComics()
                 }
 
                 val prevKey = if (page > 1) page - 1 else null
                 val next = if (endOfPaginationReached) null else page + 1
-                val remoteKeys =
-                    comics.map {
+
+                val remoteKeys: MutableList<RemoteKeys> = mutableListOf()
+                val comicList: MutableList<Comic> = mutableListOf()
+                val characterList: MutableList<CharacterSummary> = mutableListOf()
+
+                comics.map { comicNet ->
+                    remoteKeys.add(
                         RemoteKeys(
-                            comicId = it.id,
+                            comicId = comicNet.id,
                             prevKey = prevKey,
                             currentPage = page,
                             nextKey = next,
                             createdAt = System.currentTimeMillis()
                         )
-                    }
-
-                val comicList: MutableList<Comic> = mutableListOf()
-                val characterList: MutableList<CharacterSummary> = mutableListOf()
-                comics.map { comicNet ->
+                    )
                     comicList.add(
                         Comic(
                             comicId = comicNet.id,
@@ -69,8 +65,8 @@ internal class DefaultMediatorComicLocalData
                     }
                 }
 
-                database.remoteKeysDao.insertAll(remoteKeys = remoteKeys)
                 database.comicsDao.insertAll(comics = comicList)
+                database.remoteKeysDao.insertAll(remoteKeys = remoteKeys)
                 database.characterSummaryDao.insertAll(characterSummary = characterList)
             }
         }

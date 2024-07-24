@@ -11,10 +11,10 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Qualifier
 
 @Qualifier
-annotation class DefaultComicRemote
+internal annotation class DefaultComicRemote
 
 @Qualifier
-annotation class DefaultCharacterRemote
+internal annotation class DefaultCharacterRemote
 
 @Module
 @InstallIn(SingletonComponent::class)

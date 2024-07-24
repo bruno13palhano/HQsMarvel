@@ -1,7 +1,7 @@
 package com.bruno13palhano.data.remote.datasource.comics
 
-import com.bruno13palhano.data.model.Comic
 import com.bruno13palhano.data.remote.Service
+import com.bruno13palhano.data.remote.model.comics.ComicNet
 import javax.inject.Inject
 
 internal class DefaultComicRemoteDataSource
@@ -12,17 +12,7 @@ internal class DefaultComicRemoteDataSource
         override suspend fun getComics(
             offset: Int,
             limit: Int
-        ): List<Comic> {
-            return service.getComics(offset = offset, limit = limit).data.results.map { comic ->
-                Comic(
-                    comicId = comic.id,
-                    title = comic.title ?: "",
-                    description = comic.description ?: "",
-                    thumbnail =
-                        (comic.thumbnail?.path ?: "") + "." + (comic.thumbnail?.extension ?: ""),
-                    page = 0,
-                    isFavorite = false
-                )
-            }
+        ): List<ComicNet> {
+            return service.getComics(offset = offset, limit = limit).data.results
         }
     }

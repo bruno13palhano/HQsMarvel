@@ -3,8 +3,10 @@ package com.bruno13palhano.data.local.data.mediator
 import androidx.room.withTransaction
 import com.bruno13palhano.data.local.data.MediatorComicLocalData
 import com.bruno13palhano.data.local.database.HQsMarvelDatabase
+import com.bruno13palhano.data.model.CharacterSummary
 import com.bruno13palhano.data.model.Comic
 import com.bruno13palhano.data.model.RemoteKeys
+import com.bruno13palhano.data.remote.model.comics.ComicNet
 import javax.inject.Inject
 
 internal class DefaultMediatorComicLocalData
@@ -16,7 +18,7 @@ internal class DefaultMediatorComicLocalData
             page: Int,
             endOfPaginationReached: Boolean,
             isRefresh: Boolean,
-            comics: List<Comic>
+            comics: List<ComicNet>
         ) {
             database.withTransaction {
                 if (isRefresh) {
@@ -33,7 +35,7 @@ internal class DefaultMediatorComicLocalData
                 val remoteKeys =
                     comics.map {
                         RemoteKeys(
-                            comicId = it.comicId,
+                            comicId = it.id,
                             prevKey = prevKey,
                             currentPage = page,
                             nextKey = next,
@@ -41,8 +43,35 @@ internal class DefaultMediatorComicLocalData
                         )
                     }
 
+                val comicList: MutableList<Comic> = mutableListOf()
+                val characterList: MutableList<CharacterSummary> = mutableListOf()
+                comics.map { comicNet ->
+                    comicList.add(
+                        Comic(
+                            comicId = comicNet.id,
+                            title = comicNet.title ?: "",
+                            description = comicNet.description ?: "",
+                            thumbnail = comicNet.thumbnail?.path + "." + comicNet.thumbnail?.extension,
+                            page = page,
+                            isFavorite = false
+                        )
+                    )
+                    comicNet.characters.items.map { characterSummary ->
+                        characterList.add(
+                            CharacterSummary(
+                                id = getCharacterIdFromResourceURI(characterSummary.resourceURI),
+                                comicId = comicNet.id,
+                                resourceURI = characterSummary.resourceURI,
+                                name = characterSummary.name,
+                                role = characterSummary.role
+                            )
+                        )
+                    }
+                }
+
                 database.remoteKeysDao.insertAll(remoteKeys = remoteKeys)
-                database.comicsDao.insertAll(comics = comics.map { it.copy(page = page) })
+                database.comicsDao.insertAll(comics = comicList)
+                database.characterSummaryDao.insertAll(characterSummary = characterList)
             }
         }
 
@@ -56,5 +85,9 @@ internal class DefaultMediatorComicLocalData
 
         override suspend fun getCurrentPage(): Int? {
             return database.remoteKeysDao.getCurrentPage()
+        }
+
+        private fun getCharacterIdFromResourceURI(resourceURI: String?): Long {
+            return resourceURI?.split("/")?.last()?.toLong() ?: 0L
         }
     }

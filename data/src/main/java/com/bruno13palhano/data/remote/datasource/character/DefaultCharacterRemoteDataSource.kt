@@ -9,18 +9,14 @@ internal class DefaultCharacterRemoteDataSource
     constructor(
         private val service: Service
     ) : CharacterRemoteDataSource {
-        override suspend fun getCharacters(
-            id: Long,
-            offset: Int,
-            limit: Int
-        ): List<Character> {
-            return service.getCharacters(id = id, offset = offset, limit = limit).data.results.map {
-                Character(
-                    id = it.id,
-                    name = it.name ?: "",
-                    description = it.description ?: "",
-                    thumbnail = (it.thumbnail?.path ?: "") + "." + (it.thumbnail?.extension ?: "")
-                )
-            }
+        override suspend fun getCharacter(id: Long): Character {
+            val characterNet = service.getCharacters(id = id).data.results[0]
+
+            return Character(
+                id = characterNet.id,
+                name = characterNet.name,
+                description = characterNet.description,
+                thumbnail = characterNet.thumbnail?.path + "." + characterNet.thumbnail?.extension
+            )
         }
     }

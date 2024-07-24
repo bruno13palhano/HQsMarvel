@@ -2,24 +2,29 @@ package com.bruno13palhano.data.repository.character
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.bruno13palhano.data.model.Character
-import com.bruno13palhano.data.remote.datasource.character.CharacterRemoteDataSource
+import com.bruno13palhano.data.local.data.CharacterSummaryLocalData
+import com.bruno13palhano.data.model.CharacterSummary
 import retrofit2.HttpException
 
-internal class CharacterPagingSource(
-    private val characterRemoteDataSource: CharacterRemoteDataSource,
-    private val id: Long,
+internal class CharacterSummaryPagingSource(
+    private val characterSummaryLocalData: CharacterSummaryLocalData,
+    private val comicId: Long,
     private var offset: Int = 0,
     private val limit: Int = 15
-) : PagingSource<Int, Character>() {
-    override fun getRefreshKey(state: PagingState<Int, Character>): Int? {
+) : PagingSource<Int, CharacterSummary>() {
+    override fun getRefreshKey(state: PagingState<Int, CharacterSummary>): Int? {
         return state.anchorPosition
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Character> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CharacterSummary> {
         return try {
             val currentPage = params.key ?: 1
-            val response = characterRemoteDataSource.getCharacters(id = id, offset = offset, limit = limit)
+            val response =
+                characterSummaryLocalData.getCharacterSummaryByComicId(
+                    comicId = comicId,
+                    offset = offset,
+                    limit = limit
+                )
 
             offset += limit
 

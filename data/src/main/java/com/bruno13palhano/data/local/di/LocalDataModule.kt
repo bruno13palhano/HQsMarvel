@@ -4,11 +4,9 @@ import com.bruno13palhano.data.local.data.CharacterLocalData
 import com.bruno13palhano.data.local.data.CharacterSummaryLocalData
 import com.bruno13palhano.data.local.data.ComicLocalData
 import com.bruno13palhano.data.local.data.MediatorComicLocalData
-import com.bruno13palhano.data.local.data.RemoteKeysLocalData
 import com.bruno13palhano.data.local.data.dao.CharacterDao
 import com.bruno13palhano.data.local.data.dao.CharacterSummaryDao
 import com.bruno13palhano.data.local.data.dao.ComicsDao
-import com.bruno13palhano.data.local.data.dao.RemoteKeysDao
 import com.bruno13palhano.data.local.data.mediator.DefaultMediatorComicLocalData
 import dagger.Binds
 import dagger.Module
@@ -22,9 +20,6 @@ internal annotation class DefaultComic
 
 @Qualifier
 internal annotation class DefaultCharacter
-
-@Qualifier
-internal annotation class DefaultRemoteKeys
 
 @Qualifier
 internal annotation class DefaultComicMediator

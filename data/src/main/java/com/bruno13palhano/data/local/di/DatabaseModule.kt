@@ -2,6 +2,8 @@ package com.bruno13palhano.data.local.di
 
 import android.content.Context
 import androidx.room.Room
+import com.bruno13palhano.data.local.data.dao.CharacterDao
+import com.bruno13palhano.data.local.data.dao.CharacterSummaryDao
 import com.bruno13palhano.data.local.data.dao.ComicsDao
 import com.bruno13palhano.data.local.data.dao.RemoteKeysDao
 import com.bruno13palhano.data.local.database.HQsMarvelDatabase
@@ -21,7 +23,15 @@ internal object DatabaseModule {
 
     @Provides
     @Singleton
+    fun provideCharacterDao(database: HQsMarvelDatabase): CharacterDao = database.characterDao
+
+    @Provides
+    @Singleton
     fun provideRemoteKeysDao(database: HQsMarvelDatabase): RemoteKeysDao = database.remoteKeysDao
+
+    @Provides
+    @Singleton
+    fun provideCharacterSummaryDao(database: HQsMarvelDatabase): CharacterSummaryDao = database.characterSummaryDao
 
     @Provides
     @Singleton

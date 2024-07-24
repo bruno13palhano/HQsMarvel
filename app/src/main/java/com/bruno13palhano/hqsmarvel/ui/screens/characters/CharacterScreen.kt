@@ -70,10 +70,11 @@ private fun CharacterContent(
         }
     ) {
         Column(
-            modifier = Modifier
-                .padding(it)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+            modifier =
+                Modifier
+                    .padding(it)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             character?.let { ch ->
@@ -90,28 +91,28 @@ private fun CharacterContent(
 
                 Text(
                     modifier =
-                    Modifier
-                        .padding(
-                            start = 8.dp,
-                            top = 8.dp,
-                            end = 8.dp,
-                            bottom = 4.dp
-                        )
-                        .fillMaxWidth(),
+                        Modifier
+                            .padding(
+                                start = 8.dp,
+                                top = 8.dp,
+                                end = 8.dp,
+                                bottom = 4.dp
+                            )
+                            .fillMaxWidth(),
                     text = ch.name ?: "",
                     style = MaterialTheme.typography.titleMedium
                 )
 
                 Text(
                     modifier =
-                    Modifier
-                        .padding(
-                            start = 8.dp,
-                            top = 4.dp,
-                            end = 8.dp,
-                            bottom = 8.dp
-                        )
-                        .fillMaxWidth(),
+                        Modifier
+                            .padding(
+                                start = 8.dp,
+                                top = 4.dp,
+                                end = 8.dp,
+                                bottom = 8.dp
+                            )
+                            .fillMaxWidth(),
                     text = ch.description ?: "",
                     style = MaterialTheme.typography.bodyMedium
                 )

@@ -10,7 +10,7 @@ internal class DefaultCharacterRemoteDataSource
         private val service: Service
     ) : CharacterRemoteDataSource {
         override suspend fun getCharacter(id: Long): Character {
-            val characterNet = service.getCharacters(id = id).data.results[0]
+            val characterNet = service.getCharacter(id = id).data.results[0]
 
             return Character(
                 id = characterNet.id,

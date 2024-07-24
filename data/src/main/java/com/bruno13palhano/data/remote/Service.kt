@@ -13,10 +13,8 @@ internal interface Service {
         @Query("limit") limit: Int
     ): ComicDataWrapper
 
-    @GET("comics/{comicId}/characters")
-    suspend fun getCharacters(
-        @Path("comicId") id: Long,
-        @Query("offset") offset: Int,
-        @Query("limit") limit: Int
+    @GET("characters/{id}")
+    suspend fun getCharacter(
+        @Path("id") id: Long
     ): CharacterDataWrapper
 }

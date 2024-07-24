@@ -1,4 +1,4 @@
-package com.bruno13palhano.data.repository.character
+package com.bruno13palhano.data.repository.charactersummary
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState

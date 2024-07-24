@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.bruno13palhano.data.di.CharacterRep
-import com.bruno13palhano.data.model.Character
-import com.bruno13palhano.data.repository.character.CharacterRepository
+import com.bruno13palhano.data.di.CharacterSummaryRep
+import com.bruno13palhano.data.model.CharacterSummary
+import com.bruno13palhano.data.repository.charactersummary.CharacterSummaryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
@@ -18,9 +18,9 @@ import javax.inject.Inject
 class CharactersViewModel
     @Inject
     constructor(
-        @CharacterRep private val characterRepository: CharacterRepository
+        @CharacterSummaryRep private val characterSummaryRepository: CharacterSummaryRepository
     ) : ViewModel() {
-        private val _characters = MutableStateFlow<PagingData<Character>>(PagingData.empty())
+        private val _characters = MutableStateFlow<PagingData<CharacterSummary>>(PagingData.empty())
 
         val characters =
             _characters
@@ -30,9 +30,9 @@ class CharactersViewModel
                     initialValue = PagingData.empty()
                 )
 
-        fun fetchCharacters(id: Long) {
+        fun getCharactersSummary(comicId: Long) {
             viewModelScope.launch {
-                characterRepository.getCharacters(id)
+                characterSummaryRepository.getCharactersSummary(comicId = comicId)
                     .cachedIn(viewModelScope)
                     .collect {
                         _characters.value = it

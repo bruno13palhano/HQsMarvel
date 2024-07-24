@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -31,20 +33,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.bruno13palhano.data.model.Character
+import com.bruno13palhano.data.model.CharacterSummary
 import com.bruno13palhano.hqsmarvel.R
 import com.bruno13palhano.hqsmarvel.ui.common.CircularProgress
-import com.bruno13palhano.hqsmarvel.ui.common.Details
 import kotlinx.coroutines.launch
 
 @Composable
 fun CharactersRoute(
-    id: Long,
+    comicId: Long,
+    onItemClick: (id: Long) -> Unit,
     navigateBack: () -> Unit,
     viewModel: CharactersViewModel = hiltViewModel()
 ) {
-    LaunchedEffect(key1 = id) {
-        viewModel.fetchCharacters(id = id)
+    LaunchedEffect(key1 = comicId) {
+        viewModel.getCharactersSummary(comicId = comicId)
     }
 
     val characters = viewModel.characters.collectAsLazyPagingItems()
@@ -57,6 +59,7 @@ fun CharactersRoute(
         characters = characters,
         snackbarHostState = snackbarHostState,
         navigateBack = navigateBack,
+        onItemClick = onItemClick,
         showSnackbar = { message, retry ->
             if (currentMessage == message) return@CharactersContent
 
@@ -88,8 +91,9 @@ fun CharactersRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CharactersContent(
-    characters: LazyPagingItems<Character>,
+    characters: LazyPagingItems<CharacterSummary>,
     snackbarHostState: SnackbarHostState,
+    onItemClick: (id: Long) -> Unit,
     showSnackbar: (message: String, retry: () -> Unit) -> Unit,
     navigateBack: () -> Unit
 ) {
@@ -127,10 +131,16 @@ private fun CharactersContent(
         ) {
             items(count = characters.itemCount) { index ->
                 characters[index]?.let { character ->
-                    Details(
-                        title = character.name,
-                        description = character.description,
-                        thumbnail = character.thumbnail
+                    ListItem(
+                        headlineContent = {
+                            ElevatedCard(onClick = { onItemClick(character.id) }) {
+                                ListItem(
+                                    headlineContent = {
+                                        Text(text = "${character.name}")
+                                    }
+                                )
+                            }
+                        }
                     )
                 }
             }

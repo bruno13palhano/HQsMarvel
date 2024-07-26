@@ -19,7 +19,7 @@ internal class ComicsRemoteMediator(
     private val comicRemoteDataSource: ComicRemoteDataSource
 ) : RemoteMediator<Int, Comic>() {
     override suspend fun initialize(): InitializeAction {
-        val cacheTimeout = TimeUnit.MILLISECONDS.convert(3, TimeUnit.MINUTES)
+        val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS)
 
         return if (System.currentTimeMillis() - (mediatorComicLocalData.getCreationTime() ?: 0) < cacheTimeout) {
             InitializeAction.SKIP_INITIAL_REFRESH
@@ -65,9 +65,9 @@ internal class ComicsRemoteMediator(
             )
 
             return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
-        } catch (e: IOException) {
-            return MediatorResult.Error(e)
         } catch (e: HttpException) {
+            return MediatorResult.Error(e)
+        } catch (e: IOException) {
             return MediatorResult.Error(e)
         }
     }

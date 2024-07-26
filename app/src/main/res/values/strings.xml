@@ -14,4 +14,9 @@
     <string name="no_comics_label">No comics found"</string>
     <string name="refresh_error_label">Error when refreshing data</string>
     <string name="append_error_label">Error when getting new data</string>
+    <string name="item_not_found_error_message">Item not found</string>
+    <string name="other_errors_message">Error when getting data</string>
+    <string name="network_error_message">Network error</string>
+    <string name="unexpected_error_message">Unexpected error</string>
+    <string name="try_again_label">Try again</string>
 </resources>

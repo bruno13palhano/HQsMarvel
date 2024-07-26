@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 internal interface CharacterLocalData {
     suspend fun insert(character: Character)
 
-    fun getCharacter(id: Long): Flow<Character>
+    fun getCharacter(id: Long): Flow<Character?>
 
     suspend fun characterExists(id: Long): Boolean
 }

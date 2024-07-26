@@ -1,5 +1,7 @@
 package com.bruno13palhano.hqsmarvel.ui.screens.characters
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,11 +16,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -30,7 +38,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.bruno13palhano.data.model.Character
+import com.bruno13palhano.data.repository.utils.ErrorCode
 import com.bruno13palhano.hqsmarvel.R
+import com.bruno13palhano.hqsmarvel.ui.common.CircularProgress
+import com.bruno13palhano.hqsmarvel.ui.common.ErrorMessages
+import com.bruno13palhano.hqsmarvel.ui.common.UIState
 
 @Composable
 fun CharacterRoute(
@@ -41,20 +53,96 @@ fun CharacterRoute(
     LaunchedEffect(Unit) { viewModel.getCharacter(id = id) }
 
     val character by viewModel.character.collectAsStateWithLifecycle()
+    val uiState by viewModel.characterState.collectAsStateWithLifecycle()
+    var showContent by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    var message by remember { mutableStateOf("") }
+    val tryAgain = stringResource(id = R.string.try_again_label)
 
-    CharacterContent(
-        character = character,
-        navigateBack = navigateBack
-    )
+    when (uiState) {
+        UIState.Success -> { showContent = true }
+
+        UIState.Error(ErrorCode.HTTP_ITEM_NOT_FOUND) -> {
+            message = stringResource(id = ErrorMessages.ItemNotFound.resourceId)
+
+            LaunchedEffect(Unit) {
+                snackbarHostState.showSnackbar(
+                    message = message,
+                    duration = SnackbarDuration.Short
+                )
+            }
+
+            showContent = true
+        }
+
+        UIState.Error(ErrorCode.OTHER_HTTP_ERRORS) -> {
+            message = stringResource(id = ErrorMessages.OtherErrors.resourceId)
+
+            LaunchedEffect(Unit) {
+                snackbarHostState.showSnackbar(
+                    message = message,
+                    duration = SnackbarDuration.Short
+                )
+            }
+
+            showContent = true
+        }
+
+        UIState.Error(ErrorCode.NETWORK_ERROR) -> {
+            message = stringResource(id = ErrorMessages.NetworkError.resourceId)
+
+            LaunchedEffect(Unit) {
+                snackbarHostState.showSnackbar(
+                    message = message,
+                    actionLabel = tryAgain,
+                    duration = SnackbarDuration.Indefinite,
+                    withDismissAction = true
+                )
+            }
+
+            showContent = true
+        }
+
+        UIState.Error(ErrorCode.UNEXPECTED_ERROR) -> {
+            message = stringResource(id = ErrorMessages.UnexpectedError.resourceId)
+
+            LaunchedEffect(Unit) {
+                snackbarHostState.showSnackbar(
+                    message = message,
+                    duration = SnackbarDuration.Short
+                )
+            }
+
+            showContent = true
+        }
+
+        UIState.Loading -> { showContent = false }
+
+        else -> { showContent = true }
+    }
+
+    AnimatedContent(targetState = showContent, label = "character_content_state") { state ->
+        if (state) {
+            CharacterContent(
+                character = character,
+                snackbarHostState = snackbarHostState,
+                navigateBack = navigateBack
+            )
+        } else {
+            CircularProgress(verticalArrangement = Arrangement.Center)
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CharacterContent(
     character: Character?,
+    snackbarHostState: SnackbarHostState,
     navigateBack: () -> Unit
 ) {
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(text = character?.name ?: "") },
@@ -71,10 +159,10 @@ private fun CharacterContent(
     ) {
         Column(
             modifier =
-                Modifier
-                    .padding(it)
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
+            Modifier
+                .padding(it)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             character?.let { ch ->
@@ -91,28 +179,28 @@ private fun CharacterContent(
 
                 Text(
                     modifier =
-                        Modifier
-                            .padding(
-                                start = 8.dp,
-                                top = 8.dp,
-                                end = 8.dp,
-                                bottom = 4.dp
-                            )
-                            .fillMaxWidth(),
+                    Modifier
+                        .padding(
+                            start = 8.dp,
+                            top = 8.dp,
+                            end = 8.dp,
+                            bottom = 4.dp
+                        )
+                        .fillMaxWidth(),
                     text = ch.name ?: "",
                     style = MaterialTheme.typography.titleMedium
                 )
 
                 Text(
                     modifier =
-                        Modifier
-                            .padding(
-                                start = 8.dp,
-                                top = 4.dp,
-                                end = 8.dp,
-                                bottom = 8.dp
-                            )
-                            .fillMaxWidth(),
+                    Modifier
+                        .padding(
+                            start = 8.dp,
+                            top = 4.dp,
+                            end = 8.dp,
+                            bottom = 8.dp
+                        )
+                        .fillMaxWidth(),
                     text = ch.description ?: "",
                     style = MaterialTheme.typography.bodyMedium
                 )

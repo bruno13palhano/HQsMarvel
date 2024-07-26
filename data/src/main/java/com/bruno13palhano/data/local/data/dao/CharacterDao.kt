@@ -14,7 +14,7 @@ internal interface CharacterDao : CharacterLocalData {
     override suspend fun insert(character: Character)
 
     @Query("SELECT * FROM Character WHERE id = :id")
-    override fun getCharacter(id: Long): Flow<Character>
+    override fun getCharacter(id: Long): Flow<Character?>
 
     @Query("SELECT EXISTS(SELECT * FROM Character WHERE id = :id)")
     override suspend fun characterExists(id: Long): Boolean

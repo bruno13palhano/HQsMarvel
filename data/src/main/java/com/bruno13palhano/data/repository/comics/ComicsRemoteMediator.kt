@@ -34,14 +34,10 @@ internal class ComicsRemoteMediator(
     ): MediatorResult {
         val page: Int =
             when (loadType) {
-                LoadType.REFRESH -> {
-                    val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
-                    remoteKeys?.nextKey?.minus(1) ?: 1
-                }
+                LoadType.REFRESH -> 1
+
                 LoadType.PREPEND -> {
-                    val remoteKeys = getRemoteKeyForFirstItem(state)
-                    val prevKey = remoteKeys?.prevKey
-                    prevKey ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
+                    return MediatorResult.Success(endOfPaginationReached = true)
                 }
                 LoadType.APPEND -> {
                     val remoteKeys = getRemoteKeyForLastItem(state)
@@ -51,14 +47,20 @@ internal class ComicsRemoteMediator(
             }
 
         try {
-            val lastOffset = getLastOffset() ?: 0
+            val lastOffset = getLastOffset()
+            val currentOffset =
+                if (loadType == LoadType.REFRESH) {
+                    0
+                } else {
+                    lastOffset ?: 0
+                }
 
-            val response = comicRemoteDataSource.getComics(lastOffset, state.config.pageSize)
+            val response = comicRemoteDataSource.getComics(currentOffset, state.config.pageSize)
             val endOfPaginationReached = response.isEmpty()
 
             mediatorComicLocalData.insertAll(
                 page = page,
-                nextOffset = lastOffset + limit,
+                nextOffset = currentOffset + limit,
                 endOfPaginationReached = endOfPaginationReached,
                 isRefresh = loadType == LoadType.REFRESH,
                 comics = response
@@ -69,20 +71,6 @@ internal class ComicsRemoteMediator(
             return MediatorResult.Error(e)
         } catch (e: IOException) {
             return MediatorResult.Error(e)
-        }
-    }
-
-    private suspend fun getRemoteKeyClosestToCurrentPosition(state: PagingState<Int, Comic>): RemoteKeys? {
-        return state.anchorPosition?.let { position ->
-            state.closestItemToPosition(position)?.comicId?.let { comicId ->
-                mediatorComicLocalData.getRemoteKeyByComicId(comicId = comicId)
-            }
-        }
-    }
-
-    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, Comic>): RemoteKeys? {
-        return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()?.let { comic ->
-            mediatorComicLocalData.getRemoteKeyByComicId(comicId = comic.comicId)
         }
     }
 

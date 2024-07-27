@@ -23,11 +23,8 @@ internal class DefaultMediatorComicLocalData
             comics: List<ComicNet>
         ) {
             database.withTransaction {
-                var offset = nextOffset
-
                 if (isRefresh) {
                     database.comicsDao.clearComics()
-                    offset = 0
                 }
 
                 val prevKey = if (page > 1) page - 1 else null
@@ -70,14 +67,14 @@ internal class DefaultMediatorComicLocalData
                     }
                 }
 
-                database.comicsDao.insertAll(comics = comicList)
                 database.comicOffsetDao.insert(
                     comicOffset =
                         ComicOffset(
                             id = 1L,
-                            lastOffset = offset
+                            lastOffset = nextOffset
                         )
                 )
+                database.comicsDao.insertAll(comics = comicList)
                 database.remoteKeysDao.insertAll(remoteKeys = remoteKeys)
                 database.characterSummaryDao.insertAll(characterSummary = characterList)
             }

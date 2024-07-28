@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
@@ -35,7 +34,6 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -47,10 +45,10 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,10 +59,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.paging.LoadState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -73,7 +70,7 @@ import coil.request.ImageRequest
 import com.bruno13palhano.data.model.Comic
 import com.bruno13palhano.hqsmarvel.R
 import com.bruno13palhano.hqsmarvel.ui.common.CircularProgress
-import kotlinx.coroutines.launch
+import com.bruno13palhano.hqsmarvel.ui.common.ItemCard
 
 @Composable
 fun HomeRoute(
@@ -83,42 +80,78 @@ fun HomeRoute(
 ) {
     val comics = viewModel.comics.collectAsLazyPagingItems()
     val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
     var currentMessage by remember { mutableStateOf("") }
-    val refreshLabel = stringResource(id = R.string.refresh_error_label)
+    var showProgress by remember { mutableStateOf(false) }
+    var showItemProgress by remember { mutableStateOf(false) }
+    val tryAgain = stringResource(id = R.string.try_again_label)
+    val uiState by viewModel.pagingUIState.collectAsStateWithLifecycle()
+    val errorMessages =
+        listOf(
+            stringResource(id = R.string.refresh_error_label),
+            stringResource(id = R.string.append_error_label)
+        )
+
+    LaunchedEffect(comics.loadState) { viewModel.setLoadState(comics.loadState) }
+
+    when (uiState) {
+        PagingUIState.Success -> {
+            showProgress = false
+            showItemProgress = false
+        }
+
+        PagingUIState.MainCircularProgress -> {
+            showProgress = true
+            showItemProgress = false
+        }
+
+        PagingUIState.ItemCircularProgress -> {
+            showItemProgress = true
+            showProgress = false
+        }
+
+        PagingUIState.RefreshError -> {
+            showProgress = false
+            showItemProgress = false
+
+            currentMessage = errorMessages[0]
+
+            ShowErrorMessage(
+                message = currentMessage,
+                actionLabel = tryAgain,
+                snackbarHostState = snackbarHostState
+            ) {
+                comics.refresh()
+            }
+        }
+
+        PagingUIState.AppendError -> {
+            showProgress = false
+            showItemProgress = false
+
+            currentMessage = errorMessages[1]
+
+            ShowErrorMessage(
+                message = currentMessage,
+                actionLabel = tryAgain,
+                snackbarHostState = snackbarHostState
+            ) {
+                comics.retry()
+            }
+        }
+    }
 
     HomeContent(
         comics = comics,
         snackbarHostState = snackbarHostState,
+        showItemProgress = showItemProgress,
         onItemClick = onItemClick,
         onFavoriteClick = viewModel::updateFavorite,
-        showSnackbar = { message, retry ->
-            if (currentMessage == message) return@HomeContent
-
-            currentMessage = message
-
-            coroutineScope.launch {
-                val action =
-                    snackbarHostState.showSnackbar(
-                        message = message,
-                        actionLabel = refreshLabel,
-                        duration = SnackbarDuration.Short,
-                        withDismissAction = true
-                    )
-                when (action) {
-                    SnackbarResult.ActionPerformed -> {
-                        currentMessage = ""
-                        retry()
-                    }
-
-                    else -> {
-                        return@launch
-                    }
-                }
-            }
-        },
         showBottomMenu = showBottomMenu
     )
+
+    if (showProgress) {
+        Box(modifier = Modifier.fillMaxSize()) { CircularProgress() }
+    }
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
@@ -126,18 +159,11 @@ fun HomeRoute(
 private fun HomeContent(
     comics: LazyPagingItems<Comic>,
     snackbarHostState: SnackbarHostState,
+    showItemProgress: Boolean,
     onItemClick: (id: Long) -> Unit,
     onFavoriteClick: (comic: Comic) -> Unit,
-    showSnackbar: (message: String, retry: () -> Unit) -> Unit,
     showBottomMenu: (show: Boolean) -> Unit
 ) {
-    val messages =
-        listOf(
-            stringResource(id = R.string.refresh_error_label),
-            stringResource(id = R.string.append_error_label),
-            stringResource(id = R.string.no_comics_label)
-        )
-
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
@@ -146,13 +172,13 @@ private fun HomeContent(
             )
         }
     ) {
-        var showCircularProgress by remember { mutableStateOf(false) }
         var selectedComic by remember { mutableStateOf<Comic?>(null) }
-        val loadState = comics.loadState.mediator
 
         SharedTransitionLayout(modifier = Modifier.fillMaxSize()) {
             LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
+                columns = GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier =
                     Modifier
                         .semantics { contentDescription = "List of comics" }
@@ -170,13 +196,13 @@ private fun HomeContent(
                             exit = fadeOut() + scaleOut(),
                             modifier = Modifier.animateItem()
                         ) {
-                            Box(
+                            ItemCard(
                                 modifier =
                                     Modifier
                                         .sharedBounds(
                                             sharedContentState =
                                                 rememberSharedContentState(
-                                                    key = "comic-${comic.comicId}-bounds"
+                                                    key = "${comic.title}-${comic.comicId}-bounds"
                                                 ),
                                             animatedVisibilityScope = this@AnimatedVisibility,
                                             clipInOverlayDuringTransition =
@@ -184,97 +210,28 @@ private fun HomeContent(
                                                     RoundedCornerShape(5)
                                                 )
                                         )
-                                        .fillMaxSize()
-                            ) {
-                                ElevatedCard(
-                                    modifier =
-                                        Modifier
-                                            .padding(4.dp)
-                                            .height(200.dp),
-                                    onClick = {
-                                        selectedComic = comic
-                                        showBottomMenu(false)
-                                    }
-                                ) {
-                                    Column {
-                                        AsyncImage(
-                                            modifier =
-                                                Modifier
-                                                    .padding(8.dp)
-                                                    .sizeIn(maxHeight = 128.dp, minHeight = 128.dp)
-                                                    .fillMaxWidth()
-                                                    .align(Alignment.CenterHorizontally)
-                                                    .clip(RoundedCornerShape(5)),
-                                            model =
-                                                ImageRequest.Builder(LocalContext.current)
-                                                    .data(comic.thumbnail)
-                                                    .crossfade(true)
-                                                    .placeholderMemoryCacheKey(
-                                                        key = "comic-${comic.comicId}"
-                                                    )
-                                                    .memoryCacheKey(
-                                                        key = "comic-${comic.comicId}"
-                                                    )
-                                                    .build(),
-                                            contentDescription = null,
-                                            contentScale = ContentScale.Crop
-                                        )
-
-                                        Text(
-                                            modifier =
-                                                Modifier.padding(
-                                                    start = 16.dp,
-                                                    top = 16.dp,
-                                                    end = 16.dp
-                                                ),
-                                            text = comics[index]?.title ?: "",
-                                            maxLines = 1,
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }
+                                        .height(240.dp),
+                                id = comic.comicId,
+                                title = comic.title,
+                                thumbnail = comic.thumbnail,
+                                copyright = "© 2024 MARVEL",
+                                onClick = {
+                                    selectedComic = comic
+                                    showBottomMenu(false)
                                 }
-                            }
+                            )
                         }
                     }
                 }
 
-                comics.apply {
-                    when {
-                        loadState?.refresh is LoadState.Loading -> {
-                            item { showCircularProgress = true }
-                        }
-
-                        loadState?.refresh is LoadState.Error -> {
-                            showCircularProgress = false
-                            showSnackbar(messages[0]) { retry() }
-                        }
-
-                        loadState?.append is LoadState.Loading -> {
-                            item { showCircularProgress = true }
-                        }
-
-                        loadState?.append is LoadState.Error -> {
-                            showCircularProgress = false
-                            showSnackbar(messages[1]) { retry() }
-                        }
-
-                        loadState?.append?.endOfPaginationReached ?: false -> {
-                            showSnackbar(messages[2]) {}
-                        }
-
-                        else -> {
-                            showCircularProgress = false
-                        }
+                if (showItemProgress) {
+                    item {
+                        Box(modifier = Modifier.height(200.dp)) { CircularProgress() }
                     }
                 }
             }
 
-            if (showCircularProgress) {
-                CircularProgress()
-            }
-
-            ComicsDetailsScreen(
+            ComicDetailsScreen(
                 comic = selectedComic,
                 onFavoriteClick = {
                     selectedComic = null
@@ -297,7 +254,7 @@ private fun HomeContent(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.ComicsDetailsScreen(
+fun SharedTransitionScope.ComicDetailsScreen(
     modifier: Modifier = Modifier,
     comic: Comic?,
     onItemClick: (id: Long) -> Unit,
@@ -329,36 +286,38 @@ fun SharedTransitionScope.ComicsDetailsScreen(
                             .sharedBounds(
                                 sharedContentState =
                                     rememberSharedContentState(
-                                        key = "comic-${targetComic.comicId}-bounds"
+                                        key = "${targetComic.title}-${targetComic.comicId}-bounds"
                                     ),
                                 animatedVisibilityScope = this@AnimatedContent,
                                 clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(5))
                             )
                             .verticalScroll(rememberScrollState())
                 ) {
-                    AsyncImage(
-                        modifier =
-                            Modifier
-                                .sharedElement(
-                                    rememberSharedContentState(
-                                        key = "comic-${targetComic.comicId}"
-                                    ),
-                                    animatedVisibilityScope = this@AnimatedContent
-                                )
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(5, 5, 0, 0)),
-                        model =
-                            ImageRequest.Builder(LocalContext.current)
-                                .data(targetComic.thumbnail)
-                                .crossfade(true)
-                                .placeholderMemoryCacheKey(
-                                    key = "comic-${targetComic.comicId}"
-                                )
-                                .memoryCacheKey(key = "comic-${targetComic.comicId}")
-                                .build(),
-                        contentDescription = stringResource(id = R.string.image_label),
-                        contentScale = ContentScale.Crop
-                    )
+                    targetComic.thumbnail?.let { image ->
+                        AsyncImage(
+                            modifier =
+                                Modifier
+                                    .sharedElement(
+                                        rememberSharedContentState(
+                                            key = "${targetComic.title}-${targetComic.comicId}"
+                                        ),
+                                        animatedVisibilityScope = this@AnimatedContent
+                                    )
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(5, 5, 0, 0)),
+                            model =
+                                ImageRequest.Builder(LocalContext.current)
+                                    .data(image)
+                                    .crossfade(true)
+                                    .placeholderMemoryCacheKey(
+                                        key = "${targetComic.title}-${targetComic.comicId}"
+                                    )
+                                    .memoryCacheKey(key = "${targetComic.title}-${targetComic.comicId}")
+                                    .build(),
+                            contentDescription = stringResource(id = R.string.image_label),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
 
                     Text(
                         modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
@@ -373,9 +332,7 @@ fun SharedTransitionScope.ComicsDetailsScreen(
                         fontStyle = FontStyle.Italic
                     )
 
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
+                    Row(horizontalArrangement = Arrangement.SpaceBetween) {
                         if (!targetComic.isFavorite) {
                             Button(
                                 modifier =
@@ -443,6 +400,33 @@ fun SharedTransitionScope.ComicsDetailsScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun ShowErrorMessage(
+    message: String,
+    actionLabel: String,
+    snackbarHostState: SnackbarHostState,
+    onAction: () -> Unit
+) {
+    LaunchedEffect(Unit) {
+        val action =
+            snackbarHostState.showSnackbar(
+                message = message,
+                actionLabel = actionLabel,
+                duration = SnackbarDuration.Indefinite,
+                withDismissAction = true
+            )
+        when (action) {
+            SnackbarResult.ActionPerformed -> {
+                onAction()
+            }
+
+            else -> {
+                return@LaunchedEffect
             }
         }
     }

@@ -15,7 +15,6 @@ import com.bruno13palhano.data.remote.model.comics.ComicDataWrapper
 import com.bruno13palhano.data.remote.model.comics.ComicNet
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import com.squareup.moshi.adapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlin.random.Random
 

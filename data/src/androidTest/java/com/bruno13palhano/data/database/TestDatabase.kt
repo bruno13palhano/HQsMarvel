@@ -2,15 +2,24 @@ package com.bruno13palhano.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.bruno13palhano.data.local.data.ComicsDao
-import com.bruno13palhano.data.local.data.RemoteKeysDao
+import com.bruno13palhano.data.local.data.dao.CharacterDao
+import com.bruno13palhano.data.local.data.dao.CharacterSummaryDao
+import com.bruno13palhano.data.local.data.dao.ComicOffsetDao
+import com.bruno13palhano.data.local.data.dao.ComicsDao
+import com.bruno13palhano.data.local.data.dao.RemoteKeysDao
+import com.bruno13palhano.data.model.Character
+import com.bruno13palhano.data.model.CharacterSummary
 import com.bruno13palhano.data.model.Comic
+import com.bruno13palhano.data.model.ComicOffset
 import com.bruno13palhano.data.model.RemoteKeys
 
 @Database(
     entities = [
         Comic::class,
-        RemoteKeys::class
+        Character::class,
+        RemoteKeys::class,
+        CharacterSummary::class,
+        ComicOffset::class
     ],
     version = 1,
     exportSchema = false
@@ -18,4 +27,7 @@ import com.bruno13palhano.data.model.RemoteKeys
 internal abstract class TestDatabase : RoomDatabase() {
     abstract val comicsDao: ComicsDao
     abstract val remoteKeysDao: RemoteKeysDao
+    abstract val characterSummaryDao: CharacterSummaryDao
+    abstract val comicOffsetDao: ComicOffsetDao
+    abstract val characterDao: CharacterDao
 }

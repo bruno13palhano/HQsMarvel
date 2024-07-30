@@ -34,10 +34,11 @@ class CharacterSummaryPagingSourceTest {
     @Before
     fun setup() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        database = Room.inMemoryDatabaseBuilder(
-            context,
-            TestDatabase::class.java
-        ).build()
+        database =
+            Room.inMemoryDatabaseBuilder(
+                context,
+                TestDatabase::class.java
+            ).build()
 
         comicsDao = database.comicsDao
         characterSummaryDao = database.characterSummaryDao
@@ -50,83 +51,93 @@ class CharacterSummaryPagingSourceTest {
     }
 
     @Test
-    fun loadReturnsPageWhenOnSuccessfulLoadOfItemKeyedData() = runTest {
-        val charactersSummary = (1 .. 60).map { makeRandomCharacterSummary(comicId = comicId) }
+    fun loadReturnsPageWhenOnSuccessfulLoadOfItemKeyedData() =
+        runTest {
+            val charactersSummary = (1..60).map { makeRandomCharacterSummary(comicId = comicId) }
 
-        comicsDao.insert(comic)
-        characterSummaryDao.insertAll(charactersSummary)
+            comicsDao.insert(comic)
+            characterSummaryDao.insertAll(charactersSummary)
 
-        val expected = charactersSummary.sortedBy { it.id }.subList(0, 15)
+            val expected = charactersSummary.sortedBy { it.id }.subList(0, 15)
 
-        val pagingSource =  CharacterSummaryPagingSource(
-            characterSummaryLocalData = characterSummaryDao,
-            comicId = comicId
-        )
+            val pagingSource =
+                CharacterSummaryPagingSource(
+                    characterSummaryLocalData = characterSummaryDao,
+                    comicId = comicId
+                )
 
-        val pager = TestPager(
-            config = PagingConfig(pageSize = 15),
-            pagingSource = pagingSource
-        )
+            val pager =
+                TestPager(
+                    config = PagingConfig(pageSize = 15),
+                    pagingSource = pagingSource
+                )
 
-        val result = pager.refresh() as LoadResult.Page
+            val result = pager.refresh() as LoadResult.Page
 
-        assertThat(result.data)
-            .containsExactlyElementsIn(expected)
-            .inOrder()
-    }
-
-    @Test
-    fun loadReturnsPageForMultipleLoadOfItemKeyedData() = runTest {
-        val charactersSummary = (1 .. 120).map { makeRandomCharacterSummary(comicId = comicId) }
-
-        comicsDao.insert(comic)
-        characterSummaryDao.insertAll(charactersSummary)
-
-        val expected = charactersSummary.sortedBy { it.id }.subList(30, 45)
-
-        val pagingSource = CharacterSummaryPagingSource(
-            characterSummaryLocalData = characterSummaryDao,
-            comicId = comicId
-        )
-
-        val pager = TestPager(
-            config = PagingConfig(pageSize = 15),
-            pagingSource = pagingSource
-        )
-
-        val page = with(pager) {
-            refresh()
-            append()
-            append()
-        } as LoadResult.Page
-
-        assertThat(page.data)
-            .containsExactlyElementsIn(expected)
-            .inOrder()
-    }
+            assertThat(result.data)
+                .containsExactlyElementsIn(expected)
+                .inOrder()
+        }
 
     @Test
-    fun refreshReturnError()  = runTest {
-        val charactersSummary = (1 .. 120).map { makeRandomCharacterSummary(comicId = comicId) }
+    fun loadReturnsPageForMultipleLoadOfItemKeyedData() =
+        runTest {
+            val charactersSummary = (1..120).map { makeRandomCharacterSummary(comicId = comicId) }
 
-        // Set throwError to true to simulate an error.
-        characterSummaryLocalData  = MockCharacterSummaryLocalData(throwError = true)
-        characterSummaryLocalData.insertAll(charactersSummary)
+            comicsDao.insert(comic)
+            characterSummaryDao.insertAll(charactersSummary)
 
-        val pagingSource = CharacterSummaryPagingSource(
-            characterSummaryLocalData = characterSummaryLocalData,
-            comicId = comicId
-        )
+            val expected = charactersSummary.sortedBy { it.id }.subList(30, 45)
 
-        val pager = TestPager(
-            config = PagingConfig(pageSize = 15),
-            pagingSource = pagingSource
-        )
+            val pagingSource =
+                CharacterSummaryPagingSource(
+                    characterSummaryLocalData = characterSummaryDao,
+                    comicId = comicId
+                )
 
-        val result = pager.refresh()
-        assertThat(result).isInstanceOf(LoadResult.Error::class.java)
+            val pager =
+                TestPager(
+                    config = PagingConfig(pageSize = 15),
+                    pagingSource = pagingSource
+                )
 
-        val page = pager.getLastLoadedPage()
-        assertThat(page).isNull()
-    }
+            val page =
+                with(pager) {
+                    refresh()
+                    append()
+                    append()
+                } as LoadResult.Page
+
+            assertThat(page.data)
+                .containsExactlyElementsIn(expected)
+                .inOrder()
+        }
+
+    @Test
+    fun refreshReturnError() =
+        runTest {
+            val charactersSummary = (1..120).map { makeRandomCharacterSummary(comicId = comicId) }
+
+            // Set throwError to true to simulate an error.
+            characterSummaryLocalData = MockCharacterSummaryLocalData(throwError = true)
+            characterSummaryLocalData.insertAll(charactersSummary)
+
+            val pagingSource =
+                CharacterSummaryPagingSource(
+                    characterSummaryLocalData = characterSummaryLocalData,
+                    comicId = comicId
+                )
+
+            val pager =
+                TestPager(
+                    config = PagingConfig(pageSize = 15),
+                    pagingSource = pagingSource
+                )
+
+            val result = pager.refresh()
+            assertThat(result).isInstanceOf(LoadResult.Error::class.java)
+
+            val page = pager.getLastLoadedPage()
+            assertThat(page).isNull()
+        }
 }

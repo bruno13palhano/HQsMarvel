@@ -19,7 +19,7 @@ android {
     defaultConfig {
         minSdk = 26
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.bruno13palhano.data.CustomTestRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -58,6 +58,7 @@ dependencies {
     androidTestImplementation(libs.coroutines.test)
     androidTestImplementation(libs.truth)
     androidTestImplementation(libs.paging.test)
+    androidTestImplementation(libs.hilt.android.testing)
     implementation(libs.coroutines.android)
     ksp(libs.hilt.android.compiler)
     ksp(libs.androidx.hilt.compiler)

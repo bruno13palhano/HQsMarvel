@@ -48,6 +48,7 @@ dependencies {
     implementation(libs.material)
     testImplementation(libs.junit)
     testImplementation(libs.turbine)
+    androidTestImplementation(libs.turbine)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.mockitoCore)
     testImplementation(libs.mockitoKotlin)

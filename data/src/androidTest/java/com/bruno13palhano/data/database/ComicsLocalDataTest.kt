@@ -1,12 +1,11 @@
 package com.bruno13palhano.data.database
 
-import android.content.Context
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.bruno13palhano.data.local.data.dao.ComicsDao
+import com.bruno13palhano.data.local.database.HQsMarvelDatabase
 import com.bruno13palhano.data.mocks.makeRandomComic
 import com.google.common.truth.Truth.assertThat
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -14,30 +13,33 @@ import kotlinx.coroutines.test.runTest
 import okio.IOException
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
+import javax.inject.Inject
+import javax.inject.Named
 import kotlin.jvm.Throws
 
-@RunWith(AndroidJUnit4::class)
-class ComicsLocalDataTest {
+@HiltAndroidTest
+internal class ComicsLocalDataTest {
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    @Named("test_db")
+    lateinit var database: HQsMarvelDatabase
     private lateinit var comicsDao: ComicsDao
-    private lateinit var database: TestDatabase
 
     @Before
-    fun createDatabase() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        database =
-            Room.inMemoryDatabaseBuilder(
-                context,
-                TestDatabase::class.java
-            ).build()
+    fun setup() {
+        hiltRule.inject()
 
         comicsDao = database.comicsDao
     }
 
     @After
     @Throws(IOException::class)
-    fun closeDatabase() {
+    fun tearDown() {
+        database.clearAllTables()
         database.close()
     }
 

@@ -1,35 +1,36 @@
 package com.bruno13palhano.data.database
 
-import android.content.Context
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.bruno13palhano.data.local.data.dao.ComicsDao
 import com.bruno13palhano.data.local.data.dao.RemoteKeysDao
+import com.bruno13palhano.data.local.database.HQsMarvelDatabase
 import com.bruno13palhano.data.mocks.makeRandomComic
 import com.bruno13palhano.data.mocks.makeRandomRemoteKeys
 import com.google.common.truth.Truth.assertThat
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import java.io.IOException
+import javax.inject.Inject
+import javax.inject.Named
 
-@RunWith(AndroidJUnit4::class)
-class RemoteKeysLocalDataTest {
+@HiltAndroidTest
+internal class RemoteKeysLocalDataTest {
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    @Named("test_db")
+    lateinit var database: HQsMarvelDatabase
     private lateinit var remoteKeysDao: RemoteKeysDao
     private lateinit var comicsDao: ComicsDao
-    private lateinit var database: TestDatabase
 
     @Before
     fun createDatabase() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        database =
-            Room.inMemoryDatabaseBuilder(
-                context,
-                TestDatabase::class.java
-            ).build()
+        hiltRule.inject()
 
         comicsDao = database.comicsDao
         remoteKeysDao = database.remoteKeysDao
@@ -77,10 +78,11 @@ class RemoteKeysLocalDataTest {
             val comic1 = makeRandomComic()
             val comic2 = makeRandomComic()
 
-            val keys = listOf(
-                makeRandomRemoteKeys(comicId = comic1.comicId, currentPage = 1, nextKey = 2),
-                makeRandomRemoteKeys(comicId = comic2.comicId, currentPage = 2, nextKey = 3)
-            )
+            val keys =
+                listOf(
+                    makeRandomRemoteKeys(comicId = comic1.comicId, currentPage = 1, nextKey = 2),
+                    makeRandomRemoteKeys(comicId = comic2.comicId, currentPage = 2, nextKey = 3)
+                )
 
             comicsDao.insert(comic1)
             comicsDao.insert(comic2)

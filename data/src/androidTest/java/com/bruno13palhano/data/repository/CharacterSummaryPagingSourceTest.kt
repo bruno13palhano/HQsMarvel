@@ -1,44 +1,45 @@
 package com.bruno13palhano.data.repository
 
-import android.content.Context
 import androidx.paging.PagingConfig
 import androidx.paging.PagingSource.LoadResult
 import androidx.paging.testing.TestPager
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.bruno13palhano.data.database.TestDatabase
 import com.bruno13palhano.data.local.data.CharacterSummaryLocalData
 import com.bruno13palhano.data.local.data.dao.CharacterSummaryDao
 import com.bruno13palhano.data.local.data.dao.ComicsDao
+import com.bruno13palhano.data.local.database.HQsMarvelDatabase
 import com.bruno13palhano.data.mocks.MockCharacterSummaryLocalData
 import com.bruno13palhano.data.mocks.makeRandomCharacterSummary
 import com.bruno13palhano.data.mocks.makeRandomComic
 import com.bruno13palhano.data.repository.charactersummary.CharacterSummaryPagingSource
 import com.google.common.truth.Truth.assertThat
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
+import javax.inject.Inject
+import javax.inject.Named
 
-@RunWith(AndroidJUnit4::class)
-class CharacterSummaryPagingSourceTest {
+@HiltAndroidTest
+internal class CharacterSummaryPagingSourceTest {
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    @Named("test_db")
+    lateinit var database: HQsMarvelDatabase
+
     private val comicId = 1L
     private val comic = makeRandomComic(comicId = comicId)
-    private lateinit var database: TestDatabase
     private lateinit var comicsDao: ComicsDao
     private lateinit var characterSummaryDao: CharacterSummaryDao
     private lateinit var characterSummaryLocalData: CharacterSummaryLocalData
 
     @Before
     fun setup() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        database =
-            Room.inMemoryDatabaseBuilder(
-                context,
-                TestDatabase::class.java
-            ).build()
+        hiltRule.inject()
 
         comicsDao = database.comicsDao
         characterSummaryDao = database.characterSummaryDao
@@ -53,12 +54,15 @@ class CharacterSummaryPagingSourceTest {
     @Test
     fun loadReturnsPageWhenOnSuccessfulLoadOfItemKeyedData() =
         runTest {
-            val charactersSummary = (1..60).map { makeRandomCharacterSummary(comicId = comicId) }
+            val charactersSummary =
+                (1..60)
+                    .map { makeRandomCharacterSummary(id = it.toLong(), comicId = comicId) }
+                    .sortedBy { it.id }
 
             comicsDao.insert(comic)
             characterSummaryDao.insertAll(charactersSummary)
 
-            val expected = charactersSummary.sortedBy { it.id }.subList(0, 15)
+            val expected = charactersSummary.subList(0, 15)
 
             val pagingSource =
                 CharacterSummaryPagingSource(
@@ -82,12 +86,15 @@ class CharacterSummaryPagingSourceTest {
     @Test
     fun loadReturnsPageForMultipleLoadOfItemKeyedData() =
         runTest {
-            val charactersSummary = (1..120).map { makeRandomCharacterSummary(comicId = comicId) }
+            val charactersSummary =
+                (1..120)
+                    .map { makeRandomCharacterSummary(id = it.toLong(), comicId = comicId) }
+                    .sortedBy { it.id }
 
             comicsDao.insert(comic)
             characterSummaryDao.insertAll(charactersSummary)
 
-            val expected = charactersSummary.sortedBy { it.id }.subList(30, 45)
+            val expected = charactersSummary.subList(30, 45)
 
             val pagingSource =
                 CharacterSummaryPagingSource(
@@ -116,7 +123,10 @@ class CharacterSummaryPagingSourceTest {
     @Test
     fun refreshReturnError() =
         runTest {
-            val charactersSummary = (1..120).map { makeRandomCharacterSummary(comicId = comicId) }
+            val charactersSummary =
+                (1..120)
+                    .map { makeRandomCharacterSummary(id = it.toLong(), comicId = comicId) }
+                    .sortedBy { it.id }
 
             // Set throwError to true to simulate an error.
             characterSummaryLocalData = MockCharacterSummaryLocalData(throwError = true)

@@ -1,19 +1,15 @@
 package com.bruno13palhano.data.repository
 
-import android.content.Context
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingConfig
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.bruno13palhano.data.database.TestDatabase
 import com.bruno13palhano.data.local.data.dao.CharacterSummaryDao
 import com.bruno13palhano.data.local.data.dao.ComicOffsetDao
 import com.bruno13palhano.data.local.data.dao.ComicsDao
 import com.bruno13palhano.data.local.data.dao.RemoteKeysDao
+import com.bruno13palhano.data.local.database.HQsMarvelDatabase
 import com.bruno13palhano.data.mocks.MockApi
 import com.bruno13palhano.data.mocks.MockMediatorComicLocalData
 import com.bruno13palhano.data.mocks.makeRandomComic
@@ -22,21 +18,31 @@ import com.bruno13palhano.data.remote.Service
 import com.bruno13palhano.data.remote.datasource.comics.ComicRemoteDataSource
 import com.bruno13palhano.data.remote.datasource.comics.DefaultComicRemoteDataSource
 import com.bruno13palhano.data.repository.comics.ComicsRemoteMediator
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
+import javax.inject.Inject
+import javax.inject.Named
 
 @OptIn(ExperimentalPagingApi::class)
-@RunWith(AndroidJUnit4::class)
-class ComicRemoteMediatorTest {
-    private val comics = (1..120).map { makeRandomComic() }
+@HiltAndroidTest
+internal class ComicRemoteMediatorTest {
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    @Named("test_db")
+    lateinit var database: HQsMarvelDatabase
+
+    private val comics = (1..120).map { makeRandomComic(comicId = it.toLong()) }
     private lateinit var api: Service
     private lateinit var remoteDataSource: ComicRemoteDataSource
-    private lateinit var database: TestDatabase
     private lateinit var comicsDao: ComicsDao
     private lateinit var remoteKeysDao: RemoteKeysDao
     private lateinit var comicOffsetDao: ComicOffsetDao
@@ -46,12 +52,7 @@ class ComicRemoteMediatorTest {
 
     @Before
     fun setup() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        database =
-            Room.inMemoryDatabaseBuilder(
-                context,
-                TestDatabase::class.java
-            ).build()
+        hiltRule.inject()
 
         comicsDao = database.comicsDao
         remoteKeysDao = database.remoteKeysDao

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.bruno13palhano.data.local.data.ComicsDao
+import com.bruno13palhano.data.local.data.dao.ComicsDao
 import com.bruno13palhano.data.mocks.makeRandomComic
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.Dispatchers

@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.bruno13palhano.data.local.data.RemoteKeysDao
+import com.bruno13palhano.data.local.data.dao.ComicsDao
+import com.bruno13palhano.data.local.data.dao.RemoteKeysDao
+import com.bruno13palhano.data.mocks.makeRandomComic
 import com.bruno13palhano.data.mocks.makeRandomRemoteKeys
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
@@ -17,6 +19,7 @@ import java.io.IOException
 @RunWith(AndroidJUnit4::class)
 class RemoteKeysLocalDataTest {
     private lateinit var remoteKeysDao: RemoteKeysDao
+    private lateinit var comicsDao: ComicsDao
     private lateinit var database: TestDatabase
 
     @Before
@@ -28,12 +31,14 @@ class RemoteKeysLocalDataTest {
                 TestDatabase::class.java
             ).build()
 
+        comicsDao = database.comicsDao
         remoteKeysDao = database.remoteKeysDao
     }
 
     @After
     @Throws(IOException::class)
     fun closeDatabase() {
+        database.clearAllTables()
         database.close()
     }
 
@@ -41,37 +46,49 @@ class RemoteKeysLocalDataTest {
     @Throws(Exception::class)
     fun shouldInsertTheRemoteKeysIntoTheDatabase() =
         runTest {
-            val remoteKeys = makeRandomRemoteKeys()
+            val comic = makeRandomComic()
+            val remoteKeys = makeRandomRemoteKeys(comicId = comic.comicId)
 
+            comicsDao.insert(comic)
             remoteKeysDao.insert(remoteKeys = remoteKeys)
 
-            assertThat(remoteKeysDao.remoteKeyId(remoteKeys.comicId, remoteKeys.currentPage)).isEqualTo(remoteKeys)
+            assertThat(remoteKeysDao.getRemoteKeyByComicId(remoteKeys.comicId)).isEqualTo(remoteKeys)
         }
 
     @Test
     @Throws(Exception::class)
     fun shouldNotInsertTheRemoteKeysIntoTheDatabaseIfItAlreadyExists() =
         runTest {
-            val key1 = makeRandomRemoteKeys(currentPage = 1, nextKey = 2)
+            val comic = makeRandomComic()
+            val key1 = makeRandomRemoteKeys(comicId = comic.comicId, currentPage = 1, nextKey = 2)
             val key2 = key1.copy(currentPage = 1, nextKey = 3)
             val keys = listOf(key1, key2)
 
+            comicsDao.insert(comic)
             remoteKeysDao.insertAll(keys)
 
-            assertThat(remoteKeysDao.remoteKeyId(key2.comicId, key2.currentPage)).isNotEqualTo(key2)
+            assertThat(remoteKeysDao.getRemoteKeyByComicId(key2.comicId)).isNotEqualTo(key2)
         }
 
     @Test
     @Throws(Exception::class)
     fun shouldDeleteRemoteKeysFromDatabase() =
         runTest {
-            val keys = (1..2).map { makeRandomRemoteKeys() }
+            val comic1 = makeRandomComic()
+            val comic2 = makeRandomComic()
 
+            val keys = listOf(
+                makeRandomRemoteKeys(comicId = comic1.comicId, currentPage = 1, nextKey = 2),
+                makeRandomRemoteKeys(comicId = comic2.comicId, currentPage = 2, nextKey = 3)
+            )
+
+            comicsDao.insert(comic1)
+            comicsDao.insert(comic2)
             remoteKeysDao.insertAll(keys)
             remoteKeysDao.clearRemoteKeys()
 
-            val key1 = remoteKeysDao.remoteKeyId(keys[0].comicId, keys[0].currentPage)
-            val key2 = remoteKeysDao.remoteKeyId(keys[1].comicId, keys[1].currentPage)
+            val key1 = remoteKeysDao.getRemoteKeyByComicId(keys[0].comicId)
+            val key2 = remoteKeysDao.getRemoteKeyByComicId(keys[1].comicId)
 
             assertThat(key1).isNull()
             assertThat(key2).isNull()
@@ -81,36 +98,43 @@ class RemoteKeysLocalDataTest {
     @Throws(Exception::class)
     fun shouldDeleteTheRemoteKeysWithThisIdAndPageIfExists() =
         runTest {
-            val key = makeRandomRemoteKeys()
+            val comic = makeRandomComic()
+            val key = makeRandomRemoteKeys(comicId = comic.comicId)
 
+            comicsDao.insert(comic)
             remoteKeysDao.insert(key)
-            remoteKeysDao.deleteById(key.comicId, key.currentPage)
+            remoteKeysDao.deleteById(key.comicId)
 
-            assertThat(remoteKeysDao.remoteKeyId(key.comicId, key.currentPage)).isNull()
+            assertThat(remoteKeysDao.getRemoteKeyByComicId(key.comicId)).isNull()
         }
 
     @Test
     @Throws(Exception::class)
     fun shouldDoNothingWhenDeletingIfThisRemoteKeysDoesNotExist() =
         runTest {
-            val key1 = makeRandomRemoteKeys()
-            val key2 = makeRandomRemoteKeys()
+            val comic1 = makeRandomComic()
+            val comic2 = makeRandomComic()
+            val key1 = makeRandomRemoteKeys(comicId = comic1.comicId)
+            val key2 = makeRandomRemoteKeys(comicId = comic2.comicId)
 
+            comicsDao.insert(comic1)
             remoteKeysDao.insert(key1)
-            remoteKeysDao.deleteById(key2.comicId, key2.currentPage)
+            remoteKeysDao.deleteById(key2.comicId)
 
-            assertThat(remoteKeysDao.remoteKeyId(key2.comicId, key2.currentPage)).isNull()
-            assertThat(remoteKeysDao.remoteKeyId(key1.comicId, key1.currentPage)).isEqualTo(key1)
+            assertThat(remoteKeysDao.getRemoteKeyByComicId(key2.comicId)).isNull()
+            assertThat(remoteKeysDao.getRemoteKeyByComicId(key1.comicId)).isEqualTo(key1)
         }
 
     @Test
     @Throws(Exception::class)
     fun shouldReturnTheLongestCreationTimeWhenThereAreRemoteKeysInDatabase() =
         runTest {
-            val key1 = makeRandomRemoteKeys(createdAt = 1000)
-            val key2 = makeRandomRemoteKeys(createdAt = 100)
-            val key3 = makeRandomRemoteKeys(createdAt = 10)
+            val comics = (1..3).map { makeRandomComic() }
+            val key1 = makeRandomRemoteKeys(comicId = comics[0].comicId, createdAt = 1000)
+            val key2 = makeRandomRemoteKeys(comicId = comics[1].comicId, createdAt = 100)
+            val key3 = makeRandomRemoteKeys(comicId = comics[2].comicId, createdAt = 10)
 
+            comicsDao.insertAll(comics)
             remoteKeysDao.insertAll(listOf(key1, key2, key3))
 
             assertThat(remoteKeysDao.getCreationTime()).isEqualTo(key1.createdAt)
@@ -127,8 +151,10 @@ class RemoteKeysLocalDataTest {
     @Throws(Exception::class)
     fun shouldReturnTheCurrentPageIfThereAreRemoteKeysInDatabase() =
         runTest {
-            val key = makeRandomRemoteKeys()
+            val comic = makeRandomComic()
+            val key = makeRandomRemoteKeys(comicId = comic.comicId)
 
+            comicsDao.insert(comic)
             remoteKeysDao.insert(key)
 
             assertThat(remoteKeysDao.getCurrentPage()).isEqualTo(key.currentPage)

@@ -97,6 +97,10 @@ internal class DefaultMediatorComicLocalData
         }
 
         private fun getCharacterIdFromResourceURI(resourceURI: String?): Long {
-            return resourceURI?.split("/")?.last()?.toLong() ?: 0L
+            return try {
+                resourceURI?.split("/")?.last()?.toLong() ?: 0L
+            } catch (e: Exception) {
+                0L
+            }
         }
     }

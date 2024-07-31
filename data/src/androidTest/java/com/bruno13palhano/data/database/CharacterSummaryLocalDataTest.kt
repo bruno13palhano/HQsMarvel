@@ -63,24 +63,25 @@ internal class CharacterSummaryLocalDataTest {
         }
 
     @Test
-    fun shouldNotInsertCharacterSummaryIntoTheDatabaseIfItAlreadyExists() = runTest {
-        val comic = makeRandomComic()
-        val character1 = makeRandomCharacterSummary(comicId = comic.comicId)
-        val character2 = makeRandomCharacterSummary(id = character1.id, comicId = comic.comicId)
+    fun shouldNotInsertCharacterSummaryIntoTheDatabaseIfItAlreadyExists() =
+        runTest {
+            val comic = makeRandomComic()
+            val character1 = makeRandomCharacterSummary(comicId = comic.comicId)
+            val character2 = makeRandomCharacterSummary(id = character1.id, comicId = comic.comicId)
 
-        comicsDao.insert(comic)
-        characterSummaryDao.insert(character1)
-        characterSummaryDao.insert(character2)
+            comicsDao.insert(comic)
+            characterSummaryDao.insert(character1)
+            characterSummaryDao.insert(character2)
 
-        assertThat(
-            characterSummaryDao.getCharacterSummaryByComicId(
-                comicId = comic.comicId,
-                offset = 0,
-                limit = 1
+            assertThat(
+                characterSummaryDao.getCharacterSummaryByComicId(
+                    comicId = comic.comicId,
+                    offset = 0,
+                    limit = 1
+                )
             )
-        )
-            .doesNotContain(character2)
-    }
+                .doesNotContain(character2)
+        }
 
     @Test
     fun shouldInsertAllCharacterSummaryIntoTheDatabase() =
@@ -104,24 +105,25 @@ internal class CharacterSummaryLocalDataTest {
         }
 
     @Test
-    fun shouldReturnCharacterSummaryWithTheExpectedOffsetAndLimitWhenThereAreCharacterSummaryInDatabase() = runTest {
-        val comic = makeRandomComic()
-        val characters =
-            (1..20)
-                .map { makeRandomCharacterSummary(id = it.toLong(), comicId = comic.comicId) }
+    fun shouldReturnCharacterSummaryWithTheExpectedOffsetAndLimitWhenThereAreCharacterSummaryInDatabase() =
+        runTest {
+            val comic = makeRandomComic()
+            val characters =
+                (1..20)
+                    .map { makeRandomCharacterSummary(id = it.toLong(), comicId = comic.comicId) }
 
-        comicsDao.insert(comic)
-        characterSummaryDao.insertAll(characters)
+            comicsDao.insert(comic)
+            characterSummaryDao.insertAll(characters)
 
-        assertThat(
-            characterSummaryDao.getCharacterSummaryByComicId(
-                comicId = comic.comicId,
-                offset = 10,
-                limit = 10
+            assertThat(
+                characterSummaryDao.getCharacterSummaryByComicId(
+                    comicId = comic.comicId,
+                    offset = 10,
+                    limit = 10
+                )
             )
-        )
-            .isEqualTo(characters.subList(10, 20))
-    }
+                .isEqualTo(characters.subList(10, 20))
+        }
 
     @Test
     fun shouldReturnEmptyListWhenThereAreNoCharacterSummaryInDatabase() =

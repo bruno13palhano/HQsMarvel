@@ -82,17 +82,18 @@ internal class CharacterLocalDataTest {
         }
 
     @Test
-    fun shouldReturnTrueIfCharacterExists() = runTest {
-        val character = makeRandomCharacter()
+    fun shouldReturnTrueIfCharacterExists() =
+        runTest {
+            val character = makeRandomCharacter()
 
-        characterDao.insert(character)
+            characterDao.insert(character)
 
-        assertThat(characterDao.characterExists(character.id)).isTrue()
-    }
+            assertThat(characterDao.characterExists(character.id)).isTrue()
+        }
 
     @Test
-    fun shouldReturnFalseIfCharacterDoesNotExist() = runTest {
-        assertThat(characterDao.characterExists(id = 1L)).isFalse()
-    }
-
+    fun shouldReturnFalseIfCharacterDoesNotExist() =
+        runTest {
+            assertThat(characterDao.characterExists(id = 1L)).isFalse()
+        }
 }

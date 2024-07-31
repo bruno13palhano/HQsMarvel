@@ -5,13 +5,14 @@ import androidx.paging.LoadType
 import androidx.paging.PagingConfig
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
+import com.bruno13palhano.data.local.data.MediatorComicLocalData
 import com.bruno13palhano.data.local.data.dao.CharacterSummaryDao
 import com.bruno13palhano.data.local.data.dao.ComicOffsetDao
 import com.bruno13palhano.data.local.data.dao.ComicsDao
 import com.bruno13palhano.data.local.data.dao.RemoteKeysDao
+import com.bruno13palhano.data.local.data.mediator.DefaultMediatorComicLocalData
 import com.bruno13palhano.data.local.database.HQsMarvelDatabase
 import com.bruno13palhano.data.mocks.MockApi
-import com.bruno13palhano.data.mocks.MockMediatorComicLocalData
 import com.bruno13palhano.data.mocks.makeRandomComic
 import com.bruno13palhano.data.model.Comic
 import com.bruno13palhano.data.remote.Service
@@ -48,7 +49,7 @@ internal class ComicRemoteMediatorTest {
     private lateinit var comicOffsetDao: ComicOffsetDao
     private lateinit var characterSummaryDao: CharacterSummaryDao
 
-    private lateinit var mediatorDataSource: MockMediatorComicLocalData
+    private lateinit var mediatorDataSource: MediatorComicLocalData
 
     @Before
     fun setup() {
@@ -61,13 +62,7 @@ internal class ComicRemoteMediatorTest {
         api = MockApi(comics = comics)
         remoteDataSource = DefaultComicRemoteDataSource(service = api)
 
-        mediatorDataSource =
-            MockMediatorComicLocalData(
-                comicLocalData = comicsDao,
-                remoteKeysLocalData = remoteKeysDao,
-                comicOffsetLocalData = comicOffsetDao,
-                characterSummaryLocalData = characterSummaryDao
-            )
+        mediatorDataSource = DefaultMediatorComicLocalData(database = database)
     }
 
     @After

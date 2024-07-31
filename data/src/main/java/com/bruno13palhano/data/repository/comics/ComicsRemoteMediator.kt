@@ -19,7 +19,7 @@ internal class ComicsRemoteMediator(
     private val comicRemoteDataSource: ComicRemoteDataSource
 ) : RemoteMediator<Int, Comic>() {
     override suspend fun initialize(): InitializeAction {
-        val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS)
+        val cacheTimeout = TimeUnit.MILLISECONDS.convert(3, TimeUnit.MINUTES)
 
         return if (System.currentTimeMillis() - (mediatorComicLocalData.getCreationTime() ?: 0) < cacheTimeout) {
             InitializeAction.SKIP_INITIAL_REFRESH
@@ -55,7 +55,7 @@ internal class ComicsRemoteMediator(
                     lastOffset ?: 0
                 }
 
-            val response = comicRemoteDataSource.getComics(currentOffset, state.config.pageSize)
+            val response = comicRemoteDataSource.getComics(currentOffset, limit)
             val endOfPaginationReached = response.isEmpty()
 
             mediatorComicLocalData.insertAll(

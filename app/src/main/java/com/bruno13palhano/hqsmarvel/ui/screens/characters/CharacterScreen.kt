@@ -1,7 +1,6 @@
 package com.bruno13palhano.hqsmarvel.ui.screens.characters
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,6 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -60,7 +61,9 @@ fun CharacterRoute(
     val tryAgain = stringResource(id = R.string.try_again_label)
 
     when (uiState) {
-        UIState.Success -> { showContent = true }
+        UIState.Success -> {
+            showContent = true
+        }
 
         UIState.Error(ErrorCode.HTTP_ITEM_NOT_FOUND) -> {
             message = stringResource(id = ErrorMessages.ItemNotFound.resourceId)
@@ -116,9 +119,13 @@ fun CharacterRoute(
             showContent = true
         }
 
-        UIState.Loading -> { showContent = false }
+        UIState.Loading -> {
+            showContent = false
+        }
 
-        else -> { showContent = true }
+        else -> {
+            showContent = true
+        }
     }
 
     AnimatedContent(targetState = showContent, label = "character_content_state") { state ->
@@ -129,7 +136,7 @@ fun CharacterRoute(
                 navigateBack = navigateBack
             )
         } else {
-            CircularProgress(verticalArrangement = Arrangement.Center)
+            CircularProgress()
         }
     }
 }
@@ -159,48 +166,51 @@ private fun CharacterContent(
     ) {
         Column(
             modifier =
-            Modifier
-                .padding(it)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                Modifier
+                    .semantics { contentDescription = "Character details" }
+                    .padding(it)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             character?.let { ch ->
-                AsyncImage(
-                    modifier = Modifier.sizeIn(minHeight = 360.dp, maxHeight = 720.dp),
-                    model =
-                        ImageRequest.Builder(LocalContext.current)
-                            .data(ch.thumbnail)
-                            .memoryCacheKey(key = "character-${ch.id}")
-                            .build(),
-                    contentDescription = stringResource(id = R.string.image_label),
-                    contentScale = ContentScale.Crop
-                )
+                ch.thumbnail?.let { image ->
+                    AsyncImage(
+                        modifier = Modifier.sizeIn(minHeight = 360.dp, maxHeight = 720.dp),
+                        model =
+                            ImageRequest.Builder(LocalContext.current)
+                                .data(image)
+                                .memoryCacheKey(key = "character-${ch.id}")
+                                .build(),
+                        contentDescription = stringResource(id = R.string.image_label),
+                        contentScale = ContentScale.Crop
+                    )
+                }
 
                 Text(
                     modifier =
-                    Modifier
-                        .padding(
-                            start = 8.dp,
-                            top = 8.dp,
-                            end = 8.dp,
-                            bottom = 4.dp
-                        )
-                        .fillMaxWidth(),
+                        Modifier
+                            .padding(
+                                start = 8.dp,
+                                top = 8.dp,
+                                end = 8.dp,
+                                bottom = 4.dp
+                            )
+                            .fillMaxWidth(),
                     text = ch.name ?: "",
                     style = MaterialTheme.typography.titleMedium
                 )
 
                 Text(
                     modifier =
-                    Modifier
-                        .padding(
-                            start = 8.dp,
-                            top = 4.dp,
-                            end = 8.dp,
-                            bottom = 8.dp
-                        )
-                        .fillMaxWidth(),
+                        Modifier
+                            .padding(
+                                start = 8.dp,
+                                top = 4.dp,
+                                end = 8.dp,
+                                bottom = 8.dp
+                            )
+                            .fillMaxWidth(),
                     text = ch.description ?: "",
                     style = MaterialTheme.typography.bodyMedium
                 )

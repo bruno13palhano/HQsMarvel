@@ -3,15 +3,12 @@ package com.bruno13palhano.data.mocks
 import com.bruno13palhano.data.model.Character
 import com.bruno13palhano.data.model.CharacterSummary
 import com.bruno13palhano.data.model.Comic
-import com.bruno13palhano.data.model.RemoteKeys
+import com.bruno13palhano.data.remote.model.DataContainer
+import com.bruno13palhano.data.remote.model.DataWrapper
 import com.bruno13palhano.data.remote.model.Thumbnail
-import com.bruno13palhano.data.remote.model.character.CharacterDataContainer
-import com.bruno13palhano.data.remote.model.character.CharacterDataWrapper
 import com.bruno13palhano.data.remote.model.character.CharacterNet
 import com.bruno13palhano.data.remote.model.charactersummary.CharacterListNet
 import com.bruno13palhano.data.remote.model.charactersummary.CharacterSummaryNet
-import com.bruno13palhano.data.remote.model.comics.ComicDataContainer
-import com.bruno13palhano.data.remote.model.comics.ComicDataWrapper
 import com.bruno13palhano.data.remote.model.comics.ComicNet
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -49,20 +46,6 @@ fun makeRandomCharacter(
     thumbnail = thumbnail
 )
 
-fun makeRandomRemoteKeys(
-    comicId: Long = getRandomLong(),
-    prevKey: Int = getRandomInt(),
-    currentPage: Int = getRandomInt(),
-    nextKey: Int = getRandomInt(),
-    createdAt: Long = getRandomLong()
-) = RemoteKeys(
-    comicId = comicId,
-    prevKey = prevKey,
-    currentPage = currentPage,
-    nextKey = nextKey,
-    createdAt = createdAt
-)
-
 fun makeRandomCharacterSummary(
     id: Long = getRandomLong(),
     comicId: Long = getRandomLong(),
@@ -82,9 +65,9 @@ fun makeRandomCharacterDataWrapper(
     status: String = getRandomString(),
     copyright: String = getRandomString(),
     attributionText: String = getRandomString(),
-    data: CharacterDataContainer = makeRandomCharacterDataContainer(),
+    data: DataContainer<CharacterNet> = makeRandomCharacterDataContainer(),
     etag: String = getRandomString()
-) = CharacterDataWrapper(
+) = DataWrapper(
     code = code,
     status = status,
     copyright = copyright,
@@ -98,9 +81,9 @@ fun makeRandomComicDataWrapper(
     status: String = getRandomString(),
     copyright: String = getRandomString(),
     attributionText: String = getRandomString(),
-    data: ComicDataContainer = makeRandomComicDataContainer(),
+    data: DataContainer<ComicNet> = makeRandomComicDataContainer(),
     etag: String = getRandomString()
-) = ComicDataWrapper(
+) = DataWrapper(
     code = code,
     status = status,
     copyright = copyright,
@@ -123,7 +106,7 @@ fun makeRandomCharacterDataContainer(
                 thumbnail = Thumbnail(character.thumbnail, getRandomString())
             )
         }
-) = CharacterDataContainer(
+) = DataContainer(
     offset = offset,
     limit = limit,
     total = total,
@@ -158,7 +141,7 @@ fun makeRandomComicDataContainer(
                     )
             )
         }
-) = ComicDataContainer(
+) = DataContainer(
     offset = offset,
     limit = limit,
     total = total,
@@ -181,21 +164,17 @@ fun getRandomLong() = (1..LENGTH).sumOf { Random.nextLong(0, 1000) }
 
 fun getRandomInt() = (1..LENGTH).sumOf { Random.nextInt(0, 1000) }
 
-fun getRandomFloat() = (1..LENGTH).map { Random.nextFloat() }.sum()
-
-fun getRandomBoolean() = Random.nextBoolean()
-
 object JSONFactory {
     private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
-    private val characterDataWrapperType = Types.getRawType(CharacterDataWrapper::class.java)
-    private val comicDataWrapperType = Types.getRawType(ComicDataWrapper::class.java)
+    private val characterDataWrapperType = Types.newParameterizedType(DataWrapper::class.java, CharacterNet::class.java)
+    private val comicDataWrapperType = Types.newParameterizedType(DataWrapper::class.java, ComicNet::class.java)
 
-    private val characterDataWrapperJSONAdapter = moshi.adapter<CharacterDataWrapper>(characterDataWrapperType)
-    private val comicDataWrapperJSONAdapter = moshi.adapter<ComicDataWrapper>(comicDataWrapperType)
+    private val characterDataWrapperJSONAdapter = moshi.adapter<DataWrapper<CharacterNet>>(characterDataWrapperType)
+    private val comicDataWrapperJSONAdapter = moshi.adapter<DataWrapper<ComicNet>>(comicDataWrapperType)
 
-    fun makeCharacterDataWrapperJSON(characterDataWrapper: CharacterDataWrapper): String =
+    fun makeCharacterDataWrapperJSON(characterDataWrapper: DataWrapper<CharacterNet>): String =
         characterDataWrapperJSONAdapter.toJson(characterDataWrapper)
 
-    fun makeComicDataWrapperJSON(comicDataWrapper: ComicDataWrapper): String = comicDataWrapperJSONAdapter.toJson(comicDataWrapper)
+    fun makeComicDataWrapperJSON(comicDataWrapper: DataWrapper<ComicNet>): String = comicDataWrapperJSONAdapter.toJson(comicDataWrapper)
 }

@@ -3,13 +3,12 @@ package com.bruno13palhano.data.mocks
 import com.bruno13palhano.data.model.Character
 import com.bruno13palhano.data.model.Comic
 import com.bruno13palhano.data.remote.Service
+import com.bruno13palhano.data.remote.model.DataContainer
+import com.bruno13palhano.data.remote.model.DataWrapper
 import com.bruno13palhano.data.remote.model.Thumbnail
-import com.bruno13palhano.data.remote.model.character.CharacterDataContainer
-import com.bruno13palhano.data.remote.model.character.CharacterDataWrapper
 import com.bruno13palhano.data.remote.model.character.CharacterNet
 import com.bruno13palhano.data.remote.model.charactersummary.CharacterListNet
 import com.bruno13palhano.data.remote.model.charactersummary.CharacterSummaryNet
-import com.bruno13palhano.data.remote.model.comics.ComicDataWrapper
 import com.bruno13palhano.data.remote.model.comics.ComicNet
 import okio.IOException
 
@@ -20,7 +19,7 @@ class MockApi(
     override suspend fun getComics(
         offset: Int,
         limit: Int
-    ): ComicDataWrapper {
+    ): DataWrapper<ComicNet> {
         // Simulate a exception
         if (limit == -1) throw IOException()
 
@@ -65,17 +64,17 @@ class MockApi(
         )
     }
 
-    override suspend fun getCharacter(id: Long): CharacterDataWrapper {
+    override suspend fun getCharacter(id: Long): DataWrapper<CharacterNet> {
         val response = characters.filter { it.id == id }
 
-        return CharacterDataWrapper(
+        return DataWrapper(
             code = 200,
             status = "Ok",
             copyright = "",
             attributionText = "",
             etag = "",
             data =
-                CharacterDataContainer(
+                DataContainer(
                     offset = 0,
                     limit = 10,
                     total = 1,

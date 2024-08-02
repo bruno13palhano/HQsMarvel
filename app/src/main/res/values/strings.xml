@@ -4,6 +4,7 @@
     <string name="image_label">Image</string>
     <string name="favorite_comics_label">Favorite Comics</string>
     <string name="characters_label">Characters"</string>
+    <string name="character_label">Character"</string>
     <string name="navigate_back_label">Navigate back</string>
     <string name="see_characters_label">See Characters"</string>
     <string name="add_favorite_label">Add to Favorites"</string>

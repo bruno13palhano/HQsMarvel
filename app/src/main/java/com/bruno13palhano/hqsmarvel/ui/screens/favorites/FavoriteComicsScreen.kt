@@ -40,6 +40,7 @@ private fun FavoriteComicsContent(
     Scaffold(
         topBar = {
             TopAppBar(
+                modifier = Modifier.semantics { contentDescription = "Favorite comics screen" },
                 title = { Text(text = stringResource(id = R.string.favorite_comics_label)) }
             )
         }

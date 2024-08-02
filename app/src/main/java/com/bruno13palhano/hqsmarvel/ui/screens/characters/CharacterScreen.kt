@@ -152,6 +152,7 @@ private fun CharacterContent(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
+                modifier = Modifier.semantics { contentDescription = "Character screen" },
                 title = { Text(text = character?.name ?: stringResource(id = R.string.character_label)) },
                 navigationIcon = {
                     IconButton(

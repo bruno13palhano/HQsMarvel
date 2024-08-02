@@ -72,6 +72,7 @@ class HomeNavGraphTest {
         val route = navController.currentBackStackEntry?.toRoute<HomeRoutes.Characters>()
         val expectedRoute = HomeRoutes.Characters(route!!.comicId)
 
+        composeTestRule.onNodeWithContentDescription("List of characters").assertExists()
         assert(route == expectedRoute)
     }
 
@@ -91,6 +92,7 @@ class HomeNavGraphTest {
         val route = navController.currentBackStackEntry?.toRoute<HomeRoutes.Main>()
         val expectedRoute = HomeRoutes.Main
 
+        composeTestRule.onNodeWithContentDescription("Home screen").assertExists()
         assert(route == expectedRoute)
     }
 
@@ -112,6 +114,7 @@ class HomeNavGraphTest {
         val route = navController.currentBackStackEntry?.toRoute<HomeRoutes.Character>()
         val expectedRoute = HomeRoutes.Character(route!!.id)
 
+        composeTestRule.onNodeWithContentDescription("Character screen").assertExists()
         assert(route == expectedRoute)
     }
 
@@ -136,6 +139,7 @@ class HomeNavGraphTest {
         val route = navController.currentBackStackEntry?.toRoute<HomeRoutes.Characters>()
         val expectedRoute = HomeRoutes.Characters(route!!.comicId)
 
+        composeTestRule.onNodeWithContentDescription("List of characters").assertExists()
         assert(route == expectedRoute)
     }
 }

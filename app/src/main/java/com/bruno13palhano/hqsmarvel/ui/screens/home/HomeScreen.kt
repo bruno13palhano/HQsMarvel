@@ -168,6 +168,7 @@ private fun HomeContent(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
+                modifier = Modifier.semantics { contentDescription = "Home screen" },
                 title = { Text(text = stringResource(id = R.string.app_name)) }
             )
         }
@@ -273,6 +274,7 @@ fun SharedTransitionScope.ComicDetailsScreen(
         Box(
             modifier =
                 modifier
+                    .semantics { contentDescription = "Details" }
                     .padding(top = 80.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
                     .clip(RoundedCornerShape(5))
                     .background(MaterialTheme.colorScheme.background)
@@ -384,6 +386,7 @@ fun SharedTransitionScope.ComicDetailsScreen(
                         ElevatedButton(
                             modifier =
                                 Modifier
+                                    .semantics { contentDescription = "See characters" }
                                     .fillMaxWidth()
                                     .padding(start = 4.dp, top = 8.dp, end = 8.dp, bottom = 8.dp),
                             onClick = { onItemClick(targetComic.comicId) }

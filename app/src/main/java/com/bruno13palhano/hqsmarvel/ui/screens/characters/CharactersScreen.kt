@@ -110,7 +110,10 @@ private fun CharactersContent(
             TopAppBar(
                 title = { Text(text = stringResource(id = R.string.characters_label)) },
                 navigationIcon = {
-                    IconButton(onClick = navigateBack) {
+                    IconButton(
+                        modifier = Modifier.semantics { contentDescription = "Navigate back" },
+                        onClick = navigateBack
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(id = R.string.navigate_back_label)

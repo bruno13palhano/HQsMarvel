@@ -55,14 +55,14 @@ fun CharacterRoute(
 
     val character by viewModel.character.collectAsStateWithLifecycle()
     val uiState by viewModel.characterState.collectAsStateWithLifecycle()
-    var showContent by remember { mutableStateOf(false) }
+    var showCircularProgress by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     var message by remember { mutableStateOf("") }
     val tryAgain = stringResource(id = R.string.try_again_label)
 
     when (uiState) {
         UIState.Success -> {
-            showContent = true
+            showCircularProgress = false
         }
 
         UIState.Error(ErrorCode.HTTP_ITEM_NOT_FOUND) -> {
@@ -75,7 +75,7 @@ fun CharacterRoute(
                 )
             }
 
-            showContent = true
+            showCircularProgress = false
         }
 
         UIState.Error(ErrorCode.OTHER_HTTP_ERRORS) -> {
@@ -88,7 +88,7 @@ fun CharacterRoute(
                 )
             }
 
-            showContent = true
+            showCircularProgress = false
         }
 
         UIState.Error(ErrorCode.NETWORK_ERROR) -> {
@@ -103,7 +103,7 @@ fun CharacterRoute(
                 )
             }
 
-            showContent = true
+            showCircularProgress = false
         }
 
         UIState.Error(ErrorCode.UNEXPECTED_ERROR) -> {
@@ -116,26 +116,26 @@ fun CharacterRoute(
                 )
             }
 
-            showContent = true
+            showCircularProgress = false
         }
 
         UIState.Loading -> {
-            showContent = false
+            showCircularProgress = true
         }
 
         else -> {
-            showContent = true
+            showCircularProgress = false
         }
     }
 
-    AnimatedContent(targetState = showContent, label = "character_content_state") { state ->
+    CharacterContent(
+        character = character,
+        snackbarHostState = snackbarHostState,
+        navigateBack = navigateBack
+    )
+
+    AnimatedContent(targetState = showCircularProgress, label = "character_content_state") { state ->
         if (state) {
-            CharacterContent(
-                character = character,
-                snackbarHostState = snackbarHostState,
-                navigateBack = navigateBack
-            )
-        } else {
             CircularProgress()
         }
     }
@@ -152,9 +152,12 @@ private fun CharacterContent(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(text = character?.name ?: "") },
+                title = { Text(text = character?.name ?: stringResource(id = R.string.character_label)) },
                 navigationIcon = {
-                    IconButton(onClick = navigateBack) {
+                    IconButton(
+                        modifier = Modifier.semantics { contentDescription = "Navigate back" },
+                        onClick = navigateBack
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = null

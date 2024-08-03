@@ -63,7 +63,7 @@ internal class ComicsRemoteMediator(
                 nextOffset = currentOffset + limit,
                 endOfPaginationReached = endOfPaginationReached,
                 isRefresh = loadType == LoadType.REFRESH,
-                comics = response
+                comicNets = response
             )
 
             return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)

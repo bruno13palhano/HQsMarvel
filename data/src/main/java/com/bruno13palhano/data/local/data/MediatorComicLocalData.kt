@@ -10,7 +10,7 @@ internal interface MediatorComicLocalData {
         nextOffset: Int,
         endOfPaginationReached: Boolean,
         isRefresh: Boolean,
-        comics: List<ComicNet>
+        comicNets: List<ComicNet>
     )
 
     suspend fun insertLastOffset(lastOffset: ComicOffset)

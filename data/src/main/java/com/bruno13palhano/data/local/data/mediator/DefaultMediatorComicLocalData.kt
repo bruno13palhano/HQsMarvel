@@ -7,7 +7,6 @@ import com.bruno13palhano.data.model.CharacterSummary
 import com.bruno13palhano.data.model.Comic
 import com.bruno13palhano.data.model.ComicOffset
 import com.bruno13palhano.data.model.RemoteKeys
-import com.bruno13palhano.data.remote.model.comics.ComicNet
 import javax.inject.Inject
 
 internal class DefaultMediatorComicLocalData
@@ -20,7 +19,7 @@ internal class DefaultMediatorComicLocalData
             nextOffset: Int,
             endOfPaginationReached: Boolean,
             isRefresh: Boolean,
-            comics: List<ComicNet>
+            comicNets: List<com.bruno13palhano.data.remote.model.comics.ComicNet>
         ) {
             database.withTransaction {
                 if (isRefresh) {
@@ -34,7 +33,7 @@ internal class DefaultMediatorComicLocalData
                 val comicList: MutableList<Comic> = mutableListOf()
                 val characterList: MutableList<CharacterSummary> = mutableListOf()
 
-                comics.map { comicNet ->
+                comicNets.map { comicNet ->
                     remoteKeys.add(
                         RemoteKeys(
                             comicId = comicNet.id,

@@ -5,11 +5,10 @@ import com.bruno13palhano.data.model.CharacterSummary
 import com.bruno13palhano.data.model.Comic
 import com.bruno13palhano.data.model.RemoteKeys
 import com.bruno13palhano.data.remote.model.DataContainer
-import com.bruno13palhano.data.remote.model.DataWrapper
+import com.bruno13palhano.data.remote.model.Response
 import com.bruno13palhano.data.remote.model.Thumbnail
 import com.bruno13palhano.data.remote.model.charactersummary.CharacterListNet
 import com.bruno13palhano.data.remote.model.charactersummary.CharacterSummaryNet
-import com.bruno13palhano.data.remote.model.comics.ComicNet
 import kotlin.random.Random
 
 private const val LENGTH = 10
@@ -72,29 +71,17 @@ fun makeRandomCharacterSummary(
 )
 
 fun makeRandomComicDataWrapper(
-    code: Int = getRandomInt(),
-    status: String = getRandomString(),
     copyright: String = getRandomString(),
-    attributionText: String = getRandomString(),
-    data: DataContainer<ComicNet> = makeRandomComicDataContainer(),
-    etag: String = getRandomString()
-) = DataWrapper(
-    code = code,
-    status = status,
+    data: DataContainer<com.bruno13palhano.data.remote.model.comics.ComicNet> = makeRandomComicDataContainer()
+) = Response(
     copyright = copyright,
-    attributionText = attributionText,
-    data = data,
-    etag = etag
+    data = data
 )
 
 fun makeRandomComicDataContainer(
-    offset: Int = getRandomInt(),
-    limit: Int = getRandomInt(),
-    total: Int = getRandomInt(),
-    count: Int = getRandomInt(),
-    results: List<ComicNet> =
+    results: List<com.bruno13palhano.data.remote.model.comics.ComicNet> =
         makeRandomComicList().map { comic ->
-            ComicNet(
+            com.bruno13palhano.data.remote.model.comics.ComicNet(
                 id = comic.comicId,
                 title = comic.title,
                 description = comic.description,
@@ -105,9 +92,6 @@ fun makeRandomComicDataContainer(
                     ),
                 characters =
                     CharacterListNet(
-                        0,
-                        0,
-                        "",
                         makeRandomSummaryList().map { summary ->
                             CharacterSummaryNet(
                                 resourceURI = summary.resourceURI,
@@ -118,13 +102,7 @@ fun makeRandomComicDataContainer(
                     )
             )
         }
-) = DataContainer(
-    offset = offset,
-    limit = limit,
-    total = total,
-    count = count,
-    results = results
-)
+) = DataContainer(results = results)
 
 fun makeRandomComicList() = (1..60).map { makeRandomComic() }
 

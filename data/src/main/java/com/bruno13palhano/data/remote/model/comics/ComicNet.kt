@@ -1,6 +1,6 @@
 package com.bruno13palhano.data.remote.model.comics
 
-import com.bruno13palhano.data.remote.model.DataNet
+import com.bruno13palhano.data.remote.model.Data
 import com.bruno13palhano.data.remote.model.Thumbnail
 import com.bruno13palhano.data.remote.model.charactersummary.CharacterListNet
 import com.squareup.moshi.Json
@@ -13,4 +13,4 @@ data class ComicNet(
     @Json(name = "description") val description: String?,
     @Json(name = "thumbnail") val thumbnail: Thumbnail?,
     @Json(name = "characters") val characters: CharacterListNet
-) : DataNet(id = id)
+) : Data(id = id)

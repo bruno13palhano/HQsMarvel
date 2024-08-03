@@ -70,7 +70,7 @@ internal class MediatorComicLocalDataTest {
                 nextOffset = 15,
                 endOfPaginationReached = false,
                 isRefresh = true,
-                comics = mapComicToComicNet(comics, characters)
+                comicNets = mapComicToComicNet(comics, characters)
             )
 
             val comicsResult = database.comicsDao.getComics()
@@ -104,9 +104,6 @@ internal class MediatorComicLocalDataTest {
                 ),
             characters =
                 CharacterListNet(
-                    available = 0,
-                    returned = 0,
-                    collectionURI = "",
                     items =
                         characters[comic.comicId.toInt() - 1].map { summary ->
                             println(summary.resourceURI)

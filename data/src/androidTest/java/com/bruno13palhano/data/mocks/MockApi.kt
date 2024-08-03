@@ -4,7 +4,7 @@ import com.bruno13palhano.data.model.Character
 import com.bruno13palhano.data.model.Comic
 import com.bruno13palhano.data.remote.Service
 import com.bruno13palhano.data.remote.model.DataContainer
-import com.bruno13palhano.data.remote.model.DataWrapper
+import com.bruno13palhano.data.remote.model.Response
 import com.bruno13palhano.data.remote.model.Thumbnail
 import com.bruno13palhano.data.remote.model.character.CharacterNet
 import com.bruno13palhano.data.remote.model.charactersummary.CharacterListNet
@@ -19,7 +19,7 @@ class MockApi(
     override suspend fun getComics(
         offset: Int,
         limit: Int
-    ): DataWrapper<ComicNet> {
+    ): Response<ComicNet> {
         // Simulate a exception
         if (limit == -1) throw IOException()
 
@@ -33,10 +33,6 @@ class MockApi(
         return makeRandomComicDataWrapper(
             data =
                 makeRandomComicDataContainer(
-                    offset = offset,
-                    limit = limit,
-                    total = comics.size,
-                    count = response.size,
                     results =
                         response.map { comic ->
                             ComicNet(
@@ -46,9 +42,6 @@ class MockApi(
                                 thumbnail = Thumbnail("", ""),
                                 characters =
                                     CharacterListNet(
-                                        available = getRandomInt(),
-                                        returned = getRandomInt(),
-                                        collectionURI = getRandomString(),
                                         items =
                                             makeRandomSummaryList().map { character ->
                                                 CharacterSummaryNet(
@@ -64,21 +57,13 @@ class MockApi(
         )
     }
 
-    override suspend fun getCharacter(id: Long): DataWrapper<CharacterNet> {
+    override suspend fun getCharacter(id: Long): Response<CharacterNet> {
         val response = characters.filter { it.id == id }
 
-        return DataWrapper(
-            code = 200,
-            status = "Ok",
+        return Response(
             copyright = "",
-            attributionText = "",
-            etag = "",
             data =
                 DataContainer(
-                    offset = 0,
-                    limit = 10,
-                    total = 1,
-                    count = 1,
                     results =
                         response.map {
                             CharacterNet(

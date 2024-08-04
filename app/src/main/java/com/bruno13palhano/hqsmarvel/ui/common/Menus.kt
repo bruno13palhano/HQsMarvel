@@ -10,8 +10,11 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -21,7 +24,10 @@ import com.bruno13palhano.hqsmarvel.R
 import com.bruno13palhano.hqsmarvel.ui.navigation.MainRoutes
 
 @Composable
-fun BottomMenu(navController: NavController) {
+fun BottomMenu(
+    modifier: Modifier = Modifier,
+    navController: NavController
+) {
     val items =
         listOf(
             Screen.Home,
@@ -31,7 +37,7 @@ fun BottomMenu(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    NavigationBar {
+    NavigationBar(modifier = modifier.semantics { contentDescription = "Bottom menu" }) {
         items.forEach { screen ->
             val selected = currentDestination?.selectedRoute(screen = screen)
 

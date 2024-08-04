@@ -23,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
@@ -36,7 +38,12 @@ fun Details(
     enableDelete: Boolean = false,
     onDeleteItemClick: () -> Unit = {}
 ) {
-    ElevatedCard(modifier = Modifier.padding(vertical = 4.dp)) {
+    ElevatedCard(
+        modifier =
+            Modifier
+                .semantics { contentDescription = "Details" }
+                .padding(vertical = 4.dp)
+    ) {
         Box {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(

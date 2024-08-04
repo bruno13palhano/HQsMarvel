@@ -188,7 +188,7 @@ private fun HomeContent(
             ) {
                 items(
                     count = comics.itemCount,
-                    key = comics.itemKey { it.comicId }
+                    key = comics.itemKey { it.id }
                 ) { index ->
                     comics[index]?.let { comic ->
                         AnimatedVisibility(
@@ -203,7 +203,7 @@ private fun HomeContent(
                                         .sharedBounds(
                                             sharedContentState =
                                                 rememberSharedContentState(
-                                                    key = "${comic.title}-${comic.comicId}-bounds"
+                                                    key = "${comic.title}-${comic.id}-bounds"
                                                 ),
                                             animatedVisibilityScope = this@AnimatedVisibility,
                                             clipInOverlayDuringTransition =
@@ -212,7 +212,7 @@ private fun HomeContent(
                                                 )
                                         )
                                         .height(240.dp),
-                                id = comic.comicId,
+                                id = comic.id,
                                 title = comic.title,
                                 thumbnail = comic.thumbnail,
                                 copyright = "© 2024 MARVEL",
@@ -288,7 +288,7 @@ fun SharedTransitionScope.ComicDetailsScreen(
                             .sharedBounds(
                                 sharedContentState =
                                     rememberSharedContentState(
-                                        key = "${targetComic.title}-${targetComic.comicId}-bounds"
+                                        key = "${targetComic.title}-${targetComic.id}-bounds"
                                     ),
                                 animatedVisibilityScope = this@AnimatedContent,
                                 clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(5))
@@ -301,7 +301,7 @@ fun SharedTransitionScope.ComicDetailsScreen(
                                 Modifier
                                     .sharedElement(
                                         rememberSharedContentState(
-                                            key = "${targetComic.title}-${targetComic.comicId}"
+                                            key = "${targetComic.title}-${targetComic.id}"
                                         ),
                                         animatedVisibilityScope = this@AnimatedContent
                                     )
@@ -312,9 +312,9 @@ fun SharedTransitionScope.ComicDetailsScreen(
                                     .data(image)
                                     .crossfade(true)
                                     .placeholderMemoryCacheKey(
-                                        key = "${targetComic.title}-${targetComic.comicId}"
+                                        key = "${targetComic.title}-${targetComic.id}"
                                     )
-                                    .memoryCacheKey(key = "${targetComic.title}-${targetComic.comicId}")
+                                    .memoryCacheKey(key = "${targetComic.title}-${targetComic.id}")
                                     .build(),
                             contentDescription = stringResource(id = R.string.image_label),
                             contentScale = ContentScale.Crop
@@ -389,7 +389,7 @@ fun SharedTransitionScope.ComicDetailsScreen(
                                     .semantics { contentDescription = "See characters" }
                                     .fillMaxWidth()
                                     .padding(start = 4.dp, top = 8.dp, end = 8.dp, bottom = 8.dp),
-                            onClick = { onItemClick(targetComic.comicId) }
+                            onClick = { onItemClick(targetComic.id) }
                         ) {
                             Icon(
                                 modifier = Modifier.padding(4.dp),

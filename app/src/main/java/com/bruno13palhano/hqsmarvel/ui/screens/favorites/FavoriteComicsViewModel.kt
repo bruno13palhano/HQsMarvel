@@ -28,7 +28,7 @@ class FavoriteComicsViewModel
 
         fun deleteFavorite(comic: Comic) {
             viewModelScope.launch {
-                comicsRepository.updateComicFavorite(id = comic.comicId, isFavorite = !comic.isFavorite)
+                comicsRepository.updateComicFavorite(id = comic.id, isFavorite = !comic.isFavorite)
             }
         }
     }

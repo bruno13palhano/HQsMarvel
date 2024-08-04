@@ -26,7 +26,7 @@ class HomeViewModel
         fun updateFavorite(comic: Comic) {
             viewModelScope.launch {
                 comicsRepository.updateComicFavorite(
-                    id = comic.comicId,
+                    id = comic.id,
                     isFavorite = !comic.isFavorite
                 )
             }

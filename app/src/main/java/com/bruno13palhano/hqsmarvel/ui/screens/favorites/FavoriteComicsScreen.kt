@@ -52,7 +52,7 @@ private fun FavoriteComicsContent(
                     .semantics { contentDescription = "List of favorite comics" },
             contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp)
         ) {
-            items(items = favoriteComics, key = { item -> item.comicId }) { comic ->
+            items(items = favoriteComics, key = { item -> item.id }) { comic ->
                 Details(
                     title = comic.title,
                     description = comic.description,

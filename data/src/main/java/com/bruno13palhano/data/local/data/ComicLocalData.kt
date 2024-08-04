@@ -5,11 +5,11 @@ import com.bruno13palhano.data.model.Comic
 import kotlinx.coroutines.flow.Flow
 
 internal interface ComicLocalData {
-    suspend fun insert(comic: Comic)
+    suspend fun insertComic(comic: Comic)
 
-    suspend fun insertAll(comics: List<Comic>)
+    suspend fun insertComics(comics: List<Comic>)
 
-    fun getAll(): PagingSource<Int, Comic>
+    fun getComicsPaging(): PagingSource<Int, Comic>
 
     suspend fun clearComics()
 
@@ -18,6 +18,10 @@ internal interface ComicLocalData {
     fun getFavoriteComics(): Flow<List<Comic>>
 
     fun getFavoriteComicById(comicId: Long): Flow<Comic>
+
+    suspend fun getNextPageByComicId(id: Long): Int?
+
+    suspend fun getCreationTime(): Long?
 
     suspend fun updateFavorite(
         comicId: Long,

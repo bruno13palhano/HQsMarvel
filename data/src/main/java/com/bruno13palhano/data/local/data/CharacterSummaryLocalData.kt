@@ -3,9 +3,9 @@ package com.bruno13palhano.data.local.data
 import com.bruno13palhano.data.model.CharacterSummary
 
 internal interface CharacterSummaryLocalData {
-    suspend fun insert(characterSummary: CharacterSummary)
+    suspend fun insertCharacterSummary(characterSummary: CharacterSummary)
 
-    suspend fun insertAll(characterSummary: List<CharacterSummary>)
+    suspend fun insertCharactersSummary(characterSummary: List<CharacterSummary>)
 
     suspend fun getCharacterSummaryByComicId(
         comicId: Long,

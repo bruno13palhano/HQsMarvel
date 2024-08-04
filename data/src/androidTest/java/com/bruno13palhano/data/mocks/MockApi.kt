@@ -36,7 +36,7 @@ class MockApi(
                     results =
                         response.map { comic ->
                             ComicNet(
-                                id = comic.comicId,
+                                id = comic.id,
                                 title = comic.title,
                                 description = comic.description,
                                 thumbnail = Thumbnail("", ""),

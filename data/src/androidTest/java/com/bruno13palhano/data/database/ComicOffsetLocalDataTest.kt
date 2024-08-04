@@ -38,11 +38,11 @@ internal class ComicOffsetLocalDataTest {
     }
 
     @Test
-    fun shouldInsertComicOffsetIntoTheDatabase() =
+    fun shouldInsertComicOffsetComicOffsetIntoTheDatabase() =
         runTest {
             val comicOffset = ComicOffset(id = 1, lastOffset = 10)
 
-            comicOffsetDao.insert(comicOffset)
+            comicOffsetDao.insertComicOffset(comicOffset)
 
             assertThat(comicOffsetDao.getLastOffset()).isEqualTo(comicOffset.lastOffset)
         }
@@ -53,8 +53,8 @@ internal class ComicOffsetLocalDataTest {
             val comicOffset1 = ComicOffset(id = 1, lastOffset = 10)
             val comicOffset2 = ComicOffset(id = 1, lastOffset = 20)
 
-            comicOffsetDao.insert(comicOffset1)
-            comicOffsetDao.insert(comicOffset2)
+            comicOffsetDao.insertComicOffset(comicOffset1)
+            comicOffsetDao.insertComicOffset(comicOffset2)
 
             assertThat(comicOffsetDao.getLastOffset()).isEqualTo(comicOffset2.lastOffset)
         }
@@ -66,9 +66,9 @@ internal class ComicOffsetLocalDataTest {
             val comicOffset2 = ComicOffset(id = 2, lastOffset = 20)
             val comicOffset3 = ComicOffset(id = 3, lastOffset = 30)
 
-            comicOffsetDao.insert(comicOffset1)
-            comicOffsetDao.insert(comicOffset2)
-            comicOffsetDao.insert(comicOffset3)
+            comicOffsetDao.insertComicOffset(comicOffset1)
+            comicOffsetDao.insertComicOffset(comicOffset2)
+            comicOffsetDao.insertComicOffset(comicOffset3)
 
             assertThat(comicOffsetDao.getLastOffset()).isEqualTo(comicOffset3.lastOffset)
         }

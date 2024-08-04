@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 internal interface CharacterDao : CharacterLocalData {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    override suspend fun insert(character: Character)
+    override suspend fun insertCharacter(character: Character)
 
     @Query("SELECT * FROM Character WHERE id = :id")
-    override fun getCharacter(id: Long): Flow<Character?>
+    override fun getCharacterById(id: Long): Flow<Character?>
 
     @Query("SELECT EXISTS(SELECT * FROM Character WHERE id = :id)")
     override suspend fun characterExists(id: Long): Boolean

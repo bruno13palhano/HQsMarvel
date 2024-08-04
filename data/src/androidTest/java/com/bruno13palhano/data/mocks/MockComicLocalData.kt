@@ -11,13 +11,13 @@ import kotlinx.coroutines.flow.flowOf
 class MockComicLocalData : ComicLocalData {
     private val comics = mutableListOf<Comic>()
 
-    override suspend fun insert(comic: Comic) {
+    override suspend fun insertComic(comic: Comic) {
         if (!comics.contains(comic)) {
             comics.add(comic)
         }
     }
 
-    override suspend fun insertAll(comics: List<Comic>) {
+    override suspend fun insertComics(comics: List<Comic>) {
         val tmp = mutableListOf<Comic>()
         comics.forEach {
             if (!this.comics.contains(it)) {
@@ -27,7 +27,7 @@ class MockComicLocalData : ComicLocalData {
         this.comics.addAll(tmp)
     }
 
-    override fun getAll(): PagingSource<Int, Comic> {
+    override fun getComicsPaging(): PagingSource<Int, Comic> {
         return object : PagingSource<Int, Comic>() {
             override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Comic> {
                 val currentPage = params.key ?: 1
@@ -64,17 +64,25 @@ class MockComicLocalData : ComicLocalData {
 
     override fun getFavoriteComicById(comicId: Long): Flow<Comic> {
         return try {
-            flowOf(comics.find { it.comicId == comicId }!!)
+            flowOf(comics.find { it.id == comicId }!!)
         } catch (e: Exception) {
             emptyFlow()
         }
+    }
+
+    override suspend fun getNextPageByComicId(id: Long): Int? {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getCreationTime(): Long? {
+        TODO("Not yet implemented")
     }
 
     override suspend fun updateFavorite(
         comicId: Long,
         isFavorite: Boolean
     ) {
-        comics.find { it.comicId == comicId }?.let {
+        comics.find { it.id == comicId }?.let {
             comics[comics.indexOf(it)] = it.copy(isFavorite = isFavorite)
         }
     }

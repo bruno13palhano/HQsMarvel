@@ -6,7 +6,6 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import com.bruno13palhano.data.local.data.MediatorComicLocalData
 import com.bruno13palhano.data.model.Comic
-import com.bruno13palhano.data.model.RemoteKeys
 import com.bruno13palhano.data.remote.datasource.comics.ComicRemoteDataSource
 import okio.IOException
 import retrofit2.HttpException
@@ -39,10 +38,11 @@ internal class ComicsRemoteMediator(
                 LoadType.PREPEND -> {
                     return MediatorResult.Success(endOfPaginationReached = true)
                 }
+
                 LoadType.APPEND -> {
-                    val remoteKeys = getRemoteKeyForLastItem(state)
-                    val nextKey = remoteKeys?.nextKey
-                    nextKey ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
+                    val lastComic = getLastComic(state)
+                    val nextPage = lastComic?.nextPage
+                    nextPage ?: return MediatorResult.Success(endOfPaginationReached = lastComic != null)
                 }
             }
 
@@ -58,7 +58,7 @@ internal class ComicsRemoteMediator(
             val response = comicRemoteDataSource.getComics(currentOffset, limit)
             val endOfPaginationReached = response.isEmpty()
 
-            mediatorComicLocalData.insertAll(
+            mediatorComicLocalData.insertComicsAndRelatedData(
                 page = page,
                 nextOffset = currentOffset + limit,
                 endOfPaginationReached = endOfPaginationReached,
@@ -74,10 +74,8 @@ internal class ComicsRemoteMediator(
         }
     }
 
-    private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, Comic>): RemoteKeys? {
-        return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()?.let { comic ->
-            mediatorComicLocalData.getRemoteKeyByComicId(comicId = comic.comicId)
-        }
+    private fun getLastComic(state: PagingState<Int, Comic>): Comic? {
+        return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
     }
 
     private suspend fun getLastOffset(): Int? {

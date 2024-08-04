@@ -59,8 +59,8 @@ internal class CharacterSummaryPagingSourceTest {
                     .map { makeRandomCharacterSummary(id = it.toLong(), comicId = comicId) }
                     .sortedBy { it.id }
 
-            comicsDao.insert(comic)
-            characterSummaryDao.insertAll(charactersSummary)
+            comicsDao.insertComic(comic)
+            characterSummaryDao.insertCharactersSummary(charactersSummary)
 
             val expected = charactersSummary.subList(0, 15)
 
@@ -91,8 +91,8 @@ internal class CharacterSummaryPagingSourceTest {
                     .map { makeRandomCharacterSummary(id = it.toLong(), comicId = comicId) }
                     .sortedBy { it.id }
 
-            comicsDao.insert(comic)
-            characterSummaryDao.insertAll(charactersSummary)
+            comicsDao.insertComic(comic)
+            characterSummaryDao.insertCharactersSummary(charactersSummary)
 
             val expected = charactersSummary.subList(30, 45)
 
@@ -130,7 +130,7 @@ internal class CharacterSummaryPagingSourceTest {
 
             // Set throwError to true to simulate an error.
             characterSummaryLocalData = MockCharacterSummaryLocalData(throwError = true)
-            characterSummaryLocalData.insertAll(charactersSummary)
+            characterSummaryLocalData.insertCharactersSummary(charactersSummary)
 
             val pagingSource =
                 CharacterSummaryPagingSource(

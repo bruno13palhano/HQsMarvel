@@ -10,10 +10,10 @@ import com.bruno13palhano.data.model.CharacterSummary
 @Dao
 internal interface CharacterSummaryDao : CharacterSummaryLocalData {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    override suspend fun insert(characterSummary: CharacterSummary)
+    override suspend fun insertCharacterSummary(characterSummary: CharacterSummary)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    override suspend fun insertAll(characterSummary: List<CharacterSummary>)
+    override suspend fun insertCharactersSummary(characterSummary: List<CharacterSummary>)
 
     @Query("SELECT * FROM CharacterSummary WHERE comicId = :comicId LIMIT :offset, :limit")
     override suspend fun getCharacterSummaryByComicId(

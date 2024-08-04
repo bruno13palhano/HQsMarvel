@@ -3,7 +3,6 @@ package com.bruno13palhano.data.mocks
 import com.bruno13palhano.data.model.Character
 import com.bruno13palhano.data.model.CharacterSummary
 import com.bruno13palhano.data.model.Comic
-import com.bruno13palhano.data.model.RemoteKeys
 import com.bruno13palhano.data.remote.model.DataContainer
 import com.bruno13palhano.data.remote.model.Response
 import com.bruno13palhano.data.remote.model.Thumbnail
@@ -20,14 +19,18 @@ fun makeRandomComic(
     description: String = getRandomString(),
     thumbnail: String = getRandomString(),
     page: Int = getRandomInt(),
-    isFavorite: Boolean = Random.nextBoolean()
+    nextPage: Int? = getRandomInt(),
+    isFavorite: Boolean = Random.nextBoolean(),
+    createdAt: Long = getRandomLong()
 ) = Comic(
-    comicId = comicId,
+    id = comicId,
     title = title,
     description = description,
     thumbnail = thumbnail,
     page = page,
-    isFavorite = isFavorite
+    nextPage = nextPage,
+    isFavorite = isFavorite,
+    createdAt = createdAt
 )
 
 fun makeRandomCharacter(
@@ -40,20 +43,6 @@ fun makeRandomCharacter(
     name = name,
     description = description,
     thumbnail = thumbnail
-)
-
-fun makeRandomRemoteKeys(
-    comicId: Long = getRandomLong(),
-    prevKey: Int = getRandomInt(),
-    currentPage: Int = getRandomInt(),
-    nextKey: Int = getRandomInt(),
-    createdAt: Long = getRandomLong()
-) = RemoteKeys(
-    comicId = comicId,
-    prevKey = prevKey,
-    currentPage = currentPage,
-    nextKey = nextKey,
-    createdAt = createdAt
 )
 
 fun makeRandomCharacterSummary(
@@ -82,7 +71,7 @@ fun makeRandomComicDataContainer(
     results: List<com.bruno13palhano.data.remote.model.comics.ComicNet> =
         makeRandomComicList().map { comic ->
             com.bruno13palhano.data.remote.model.comics.ComicNet(
-                id = comic.comicId,
+                id = comic.id,
                 title = comic.title,
                 description = comic.description,
                 thumbnail =

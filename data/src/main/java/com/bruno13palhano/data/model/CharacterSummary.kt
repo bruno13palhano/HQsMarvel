@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
     foreignKeys = [
         ForeignKey(
             entity = Comic::class,
-            parentColumns = ["comicId"],
+            parentColumns = ["id"],
             childColumns = ["comicId"],
             onDelete = ForeignKey.CASCADE
         )

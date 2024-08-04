@@ -5,10 +5,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@Entity(tableName = "Comics", primaryKeys = ["comicId"])
+@Entity(tableName = "Comics", primaryKeys = ["id"])
 data class Comic(
-    @SerialName("comicId")
-    val comicId: Long,
+    @SerialName("id")
+    val id: Long,
     @SerialName("title")
     val title: String?,
     @SerialName("description")
@@ -17,6 +17,10 @@ data class Comic(
     val thumbnail: String?,
     @SerialName("page")
     val page: Int,
+    @SerialName("nextPage")
+    val nextPage: Int?,
     @SerialName("isFavorite")
-    val isFavorite: Boolean
+    val isFavorite: Boolean,
+    @SerialName("createdAt")
+    val createdAt: Long
 )

@@ -39,13 +39,13 @@ internal class CharacterLocalDataTest {
     }
 
     @Test
-    fun shouldInsertCharacterIntoTheDatabase() =
+    fun shouldInsertCharacterCharacterIntoTheDatabase() =
         runTest {
             val character = makeRandomCharacter()
 
-            characterDao.insert(character)
+            characterDao.insertCharacter(character)
 
-            characterDao.getCharacter(character.id).test {
+            characterDao.getCharacterById(character.id).test {
                 val characterResult = awaitItem()
 
                 assertThat(characterResult).isEqualTo(character)
@@ -54,15 +54,15 @@ internal class CharacterLocalDataTest {
         }
 
     @Test
-    fun shouldNotInsertCharacterIntoTheDatabaseIfItAlreadyExists() =
+    fun shouldNotInsertCharacterCharacterIntoTheDatabaseIfItAlreadyExists() =
         runTest {
             val character1 = makeRandomCharacter()
             val character2 = character1.copy(description = "description")
 
-            characterDao.insert(character1)
-            characterDao.insert(character2)
+            characterDao.insertCharacter(character1)
+            characterDao.insertCharacter(character2)
 
-            characterDao.getCharacter(character2.id).test {
+            characterDao.getCharacterById(character2.id).test {
                 val characterResult = awaitItem()
 
                 assertThat(characterResult).isNotEqualTo(character2)
@@ -73,7 +73,7 @@ internal class CharacterLocalDataTest {
     @Test
     fun shouldReturnNullWhenThereAreNoCharacterInDatabase() =
         runTest {
-            characterDao.getCharacter(id = 1L).test {
+            characterDao.getCharacterById(id = 1L).test {
                 val characterResult = awaitItem()
 
                 assertThat(characterResult).isNull()
@@ -86,7 +86,7 @@ internal class CharacterLocalDataTest {
         runTest {
             val character = makeRandomCharacter()
 
-            characterDao.insert(character)
+            characterDao.insertCharacter(character)
 
             assertThat(characterDao.characterExists(character.id)).isTrue()
         }

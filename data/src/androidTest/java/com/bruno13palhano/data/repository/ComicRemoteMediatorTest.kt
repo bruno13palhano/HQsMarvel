@@ -9,7 +9,6 @@ import com.bruno13palhano.data.local.data.MediatorComicLocalData
 import com.bruno13palhano.data.local.data.dao.CharacterSummaryDao
 import com.bruno13palhano.data.local.data.dao.ComicOffsetDao
 import com.bruno13palhano.data.local.data.dao.ComicsDao
-import com.bruno13palhano.data.local.data.dao.RemoteKeysDao
 import com.bruno13palhano.data.local.data.mediator.DefaultMediatorComicLocalData
 import com.bruno13palhano.data.local.database.HQsMarvelDatabase
 import com.bruno13palhano.data.mocks.MockApi
@@ -45,7 +44,6 @@ internal class ComicRemoteMediatorTest {
     private lateinit var api: Service
     private lateinit var remoteDataSource: ComicRemoteDataSource
     private lateinit var comicsDao: ComicsDao
-    private lateinit var remoteKeysDao: RemoteKeysDao
     private lateinit var comicOffsetDao: ComicOffsetDao
     private lateinit var characterSummaryDao: CharacterSummaryDao
 
@@ -56,7 +54,6 @@ internal class ComicRemoteMediatorTest {
         hiltRule.inject()
 
         comicsDao = database.comicsDao
-        remoteKeysDao = database.remoteKeysDao
         comicOffsetDao = database.comicOffsetDao
         characterSummaryDao = database.characterSummaryDao
         api = MockApi(comics = comics)

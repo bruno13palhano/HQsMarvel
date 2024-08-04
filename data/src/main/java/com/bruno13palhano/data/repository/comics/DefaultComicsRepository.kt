@@ -25,7 +25,7 @@ internal class DefaultComicsRepository
         override fun getComics(): Flow<PagingData<Comic>> {
             return Pager(
                 config = PagingConfig(pageSize = 15, enablePlaceholders = false),
-                pagingSourceFactory = { comicLocalData.getAll() },
+                pagingSourceFactory = { comicLocalData.getComicsPaging() },
                 remoteMediator =
                     ComicsRemoteMediator(
                         mediatorComicLocalData = mediatorComicLocalData,

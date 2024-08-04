@@ -10,7 +10,7 @@ import com.bruno13palhano.data.model.ComicOffset
 @Dao
 interface ComicOffsetDao : ComicOffsetLocalData {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    override suspend fun insert(comicOffset: ComicOffset)
+    override suspend fun insertComicOffset(comicOffset: ComicOffset)
 
     @Query("SELECT lastOffset FROM ComicOffset ORDER BY id DESC LIMIT 1")
     override suspend fun getLastOffset(): Int?

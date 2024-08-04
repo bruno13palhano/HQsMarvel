@@ -1,5 +1,6 @@
 package com.bruno13palhano.data.mocks
 
+import com.bruno13palhano.data.model.Character
 import com.bruno13palhano.data.model.CharacterSummary
 import com.bruno13palhano.data.model.Comic
 import com.bruno13palhano.data.remote.model.DataContainer
@@ -8,6 +9,7 @@ import com.bruno13palhano.data.remote.model.Thumbnail
 import com.bruno13palhano.data.remote.model.character.CharacterNet
 import com.bruno13palhano.data.remote.model.charactersummary.CharacterListNet
 import com.bruno13palhano.data.remote.model.charactersummary.CharacterSummaryNet
+import com.bruno13palhano.data.remote.model.comics.ComicNet
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -22,14 +24,30 @@ fun makeRandomComic(
     description: String = getRandomString(),
     thumbnail: String = getRandomString(),
     page: Int = getRandomInt(),
-    isFavorite: Boolean = Random.nextBoolean()
+    nextPage: Int? = getRandomInt(),
+    isFavorite: Boolean = Random.nextBoolean(),
+    createdAt: Long = getRandomLong()
 ) = Comic(
-    comicId = comicId,
+    id = comicId,
     title = title,
     description = description,
     thumbnail = thumbnail,
     page = page,
-    isFavorite = isFavorite
+    nextPage = nextPage,
+    isFavorite = isFavorite,
+    createdAt = createdAt
+)
+
+fun makeRandomCharacter(
+    id: Long = getRandomLong(),
+    name: String = getRandomString(),
+    description: String = getRandomString(),
+    thumbnail: String = getRandomString()
+) = Character(
+    id = id,
+    name = name,
+    description = description,
+    thumbnail = thumbnail
 )
 
 fun makeRandomCharacterSummary(
@@ -48,17 +66,37 @@ fun makeRandomCharacterSummary(
 
 fun makeRandomCharacterDataWrapper(
     copyright: String = getRandomString(),
-    data: DataContainer<com.bruno13palhano.data.remote.model.comics.ComicNet> = makeRandomComicDataContainer()
+    data: DataContainer<CharacterNet> = makeRandomCharacterDataContainer()
 ) = Response(
     copyright = copyright,
     data = data
 )
 
+fun makeRandomComicDataWrapper(
+    copyright: String = getRandomString(),
+    data: DataContainer<ComicNet> = makeRandomComicDataContainer()
+) = Response(
+    copyright = copyright,
+    data = data
+)
+
+fun makeRandomCharacterDataContainer(
+    results: List<CharacterNet> =
+        makeRandomCharacterList().map { character ->
+            CharacterNet(
+                id = character.id,
+                name = character.name,
+                description = character.description,
+                thumbnail = Thumbnail(character.thumbnail, getRandomString())
+            )
+        }
+) = DataContainer(results = results)
+
 fun makeRandomComicDataContainer(
-    results: List<com.bruno13palhano.data.remote.model.comics.ComicNet> =
+    results: List<ComicNet> =
         makeRandomComicList().map { comic ->
-            com.bruno13palhano.data.remote.model.comics.ComicNet(
-                id = comic.comicId,
+            ComicNet(
+                id = comic.id,
                 title = comic.title,
                 description = comic.description,
                 thumbnail = Thumbnail(comic.thumbnail, getRandomString()),
@@ -78,6 +116,8 @@ fun makeRandomComicDataContainer(
 
 fun makeRandomComicList() = (1..60).map { makeRandomComic() }
 
+fun makeRandomCharacterList() = (1..60).map { makeRandomCharacter() }
+
 fun makeRandomSummaryList() = (1..60).map { makeRandomCharacterSummary() }
 
 fun getRandomString() =
@@ -96,16 +136,11 @@ object JSONFactory {
     private val comicResponseType = Types.newParameterizedType(Response::class.java, Comic::class.java)
 
     private val characterNetResponseJSONAdapter = moshi.adapter<Response<CharacterNet>>(characterNetResponseType)
-    private val comicNetResponseJSONAdapter =
-        moshi.adapter<Response<com.bruno13palhano.data.remote.model.comics.ComicNet>>(
-            comicResponseType
-        )
+    private val comicNetResponseJSONAdapter = moshi.adapter<Response<ComicNet>>(comicResponseType)
 
     fun makeCharacterDataWrapperJSON(characterNetResponse: Response<CharacterNet>): String =
         characterNetResponseJSONAdapter.toJson(characterNetResponse)
 
-    fun makeComicDataWrapperJSON(comicNetResponse: Response<com.bruno13palhano.data.remote.model.comics.ComicNet>): String =
-        comicNetResponseJSONAdapter.toJson(
-            comicNetResponse
-        )
+    fun makeComicDataWrapperJSON(comicNetResponse: Response<ComicNet>): String =
+        comicNetResponseJSONAdapter.toJson(comicNetResponse)
 }

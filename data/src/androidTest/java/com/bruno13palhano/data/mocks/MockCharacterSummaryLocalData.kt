@@ -6,11 +6,11 @@ import com.bruno13palhano.data.model.CharacterSummary
 class MockCharacterSummaryLocalData(private val throwError: Boolean) : CharacterSummaryLocalData {
     private val characters = mutableListOf<CharacterSummary>()
 
-    override suspend fun insert(characterSummary: CharacterSummary) {
+    override suspend fun insertCharacterSummary(characterSummary: CharacterSummary) {
         characters.add(characterSummary)
     }
 
-    override suspend fun insertAll(characterSummary: List<CharacterSummary>) {
+    override suspend fun insertCharactersSummary(characterSummary: List<CharacterSummary>) {
         characters.addAll(characterSummary)
     }
 

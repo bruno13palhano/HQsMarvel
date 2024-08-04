@@ -12,13 +12,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 internal interface ComicsDao : ComicLocalData {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    override suspend fun insert(comic: Comic)
+    override suspend fun insertComic(comic: Comic)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    override suspend fun insertAll(comics: List<Comic>)
+    override suspend fun insertComics(comics: List<Comic>)
 
     @Query("SELECT * FROM Comics ORDER BY page")
-    override fun getAll(): PagingSource<Int, Comic>
+    override fun getComicsPaging(): PagingSource<Int, Comic>
 
     @Query("DELETE FROM Comics WHERE isFavorite = 0")
     override suspend fun clearComics()
@@ -29,10 +29,16 @@ internal interface ComicsDao : ComicLocalData {
     @Query("SELECT * FROM Comics WHERE isFavorite = 1")
     override fun getFavoriteComics(): Flow<List<Comic>>
 
-    @Query("SELECT * FROM Comics WHERE comicId = :comicId AND isFavorite = 1")
+    @Query("SELECT * FROM Comics WHERE id = :comicId AND isFavorite = 1")
     override fun getFavoriteComicById(comicId: Long): Flow<Comic>
 
-    @Query("UPDATE Comics SET isFavorite = :isFavorite WHERE comicId = :comicId")
+    @Query("SELECT Comics.nextPage FROM Comics WHERE id = :id")
+    override suspend fun getNextPageByComicId(id: Long): Int?
+
+    @Query("SELECT Comics.createdAt FROM Comics ORDER BY createdAt DESC LIMIT 1")
+    override suspend fun getCreationTime(): Long?
+
+    @Query("UPDATE Comics SET isFavorite = :isFavorite WHERE id = :comicId")
     override suspend fun updateFavorite(
         comicId: Long,
         isFavorite: Boolean

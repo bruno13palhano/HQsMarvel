@@ -48,7 +48,7 @@ internal class MediatorComicLocalDataTest {
     }
 
     @Test
-    fun shouldInsertTheComicsIntoTheDatabase() =
+    fun shouldInsertComicTheComicsIntoTheDatabase() =
         runTest {
             val offset = 0
             val limit = 10
@@ -65,7 +65,7 @@ internal class MediatorComicLocalDataTest {
                     }
                 }
 
-            mediatorComicLocalData.insertAll(
+            mediatorComicLocalData.insertComicsAndRelatedData(
                 page = 0,
                 nextOffset = 15,
                 endOfPaginationReached = false,
@@ -77,13 +77,13 @@ internal class MediatorComicLocalDataTest {
             val charactersResult =
                 comicsResult.map { comic ->
                     database.characterSummaryDao.getCharacterSummaryByComicId(
-                        comicId = comic.comicId,
+                        comicId = comic.id,
                         offset = offset,
                         limit = limit
                     )
                 }
 
-            assertThat(comicsResult.map { comic -> comic.comicId }).containsExactlyElementsIn(comics.map { comic -> comic.comicId })
+            assertThat(comicsResult.map { comic -> comic.id }).containsExactlyElementsIn(comics.map { comic -> comic.id })
             charactersResult.forEachIndexed { index, characterList ->
                 assertThat(characters[index]).containsExactlyElementsIn(characterList)
             }
@@ -94,7 +94,7 @@ internal class MediatorComicLocalDataTest {
         characters: List<List<CharacterSummary>>
     ) = comics.map { comic ->
         ComicNet(
-            id = comic.comicId,
+            id = comic.id,
             title = comic.title,
             description = comic.description,
             thumbnail =
@@ -105,7 +105,7 @@ internal class MediatorComicLocalDataTest {
             characters =
                 CharacterListNet(
                     items =
-                        characters[comic.comicId.toInt() - 1].map { summary ->
+                        characters[comic.id.toInt() - 1].map { summary ->
                             println(summary.resourceURI)
                             CharacterSummaryNet(
                                 resourceURI = summary.resourceURI,

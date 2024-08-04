@@ -6,7 +6,7 @@ import com.bruno13palhano.data.local.database.HQsMarvelDatabase
 import com.bruno13palhano.data.model.CharacterSummary
 import com.bruno13palhano.data.model.Comic
 import com.bruno13palhano.data.model.ComicOffset
-import com.bruno13palhano.data.model.RemoteKeys
+import com.bruno13palhano.data.remote.model.comics.ComicNet
 import javax.inject.Inject
 
 internal class DefaultMediatorComicLocalData
@@ -14,43 +14,34 @@ internal class DefaultMediatorComicLocalData
     constructor(
         private val database: HQsMarvelDatabase
     ) : MediatorComicLocalData {
-        override suspend fun insertAll(
+        override suspend fun insertComicsAndRelatedData(
             page: Int,
             nextOffset: Int,
             endOfPaginationReached: Boolean,
             isRefresh: Boolean,
-            comicNets: List<com.bruno13palhano.data.remote.model.comics.ComicNet>
+            comicNets: List<ComicNet>
         ) {
             database.withTransaction {
                 if (isRefresh) {
                     database.comicsDao.clearComics()
                 }
 
-                val prevKey = if (page > 1) page - 1 else null
-                val next = if (endOfPaginationReached) null else page + 1
+                val nextPage = if (endOfPaginationReached) null else page + 1
 
-                val remoteKeys: MutableList<RemoteKeys> = mutableListOf()
                 val comicList: MutableList<Comic> = mutableListOf()
                 val characterList: MutableList<CharacterSummary> = mutableListOf()
 
                 comicNets.map { comicNet ->
-                    remoteKeys.add(
-                        RemoteKeys(
-                            comicId = comicNet.id,
-                            prevKey = prevKey,
-                            currentPage = page,
-                            nextKey = next,
-                            createdAt = System.currentTimeMillis()
-                        )
-                    )
                     comicList.add(
                         Comic(
-                            comicId = comicNet.id,
+                            id = comicNet.id,
                             title = comicNet.title ?: "",
                             description = comicNet.description ?: "",
                             thumbnail = comicNet.thumbnail?.path + "." + comicNet.thumbnail?.extension,
                             page = page,
-                            isFavorite = false
+                            nextPage = nextPage,
+                            isFavorite = false,
+                            createdAt = System.currentTimeMillis()
                         )
                     )
                     comicNet.characters.items.map { characterSummary ->
@@ -66,29 +57,28 @@ internal class DefaultMediatorComicLocalData
                     }
                 }
 
-                database.comicOffsetDao.insert(
+                database.comicOffsetDao.insertComicOffset(
                     comicOffset =
                         ComicOffset(
                             id = 1L,
                             lastOffset = nextOffset
                         )
                 )
-                database.comicsDao.insertAll(comics = comicList)
-                database.remoteKeysDao.insertAll(remoteKeys = remoteKeys)
-                database.characterSummaryDao.insertAll(characterSummary = characterList)
+                database.comicsDao.insertComics(comics = comicList)
+                database.characterSummaryDao.insertCharactersSummary(characterSummary = characterList)
             }
         }
 
         override suspend fun insertLastOffset(lastOffset: ComicOffset) {
-            database.comicOffsetDao.insert(comicOffset = lastOffset)
+            database.comicOffsetDao.insertComicOffset(comicOffset = lastOffset)
         }
 
-        override suspend fun getRemoteKeyByComicId(comicId: Long): RemoteKeys? {
-            return database.remoteKeysDao.getRemoteKeyByComicId(comicId = comicId)
+        override suspend fun getNextPageByComicId(comicId: Long): Int? {
+            return database.comicsDao.getNextPageByComicId(id = comicId)
         }
 
         override suspend fun getCreationTime(): Long? {
-            return database.remoteKeysDao.getCreationTime()
+            return database.comicsDao.getCreationTime()
         }
 
         override suspend fun getLastOffset(): Int? {

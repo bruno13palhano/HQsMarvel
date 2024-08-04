@@ -49,7 +49,7 @@ internal class ComicsLocalDataTest {
         runTest {
             val comic = makeRandomComic()
 
-            comicsDao.insert(comic = comic)
+            comicsDao.insertComic(comic = comic)
 
             assertThat(comicsDao.getComics()).contains(comic)
         }
@@ -62,7 +62,7 @@ internal class ComicsLocalDataTest {
             val comic2 = comic1.copy(isFavorite = true)
             val comics = listOf(comic1, comic2)
 
-            launch { comicsDao.insertAll(comics) }
+            launch { comicsDao.insertComics(comics) }
 
             launch(Dispatchers.IO) {
                 assertThat(comicsDao.getComics()).containsNoDuplicates()
@@ -86,7 +86,7 @@ internal class ComicsLocalDataTest {
         runTest {
             val comics = (1..5).map { makeRandomComic() }
 
-            comicsDao.insertAll(comics)
+            comicsDao.insertComics(comics)
 
             launch(Dispatchers.IO) {
                 assertThat(comicsDao.getComics()).containsExactlyElementsIn(comics)
@@ -105,7 +105,7 @@ internal class ComicsLocalDataTest {
                     makeRandomComic(isFavorite = true)
                 )
 
-            comicsDao.insertAll(comics)
+            comicsDao.insertComics(comics)
             comicsDao.clearComics()
 
             launch(Dispatchers.IO) {
@@ -125,7 +125,7 @@ internal class ComicsLocalDataTest {
                     makeRandomComic(isFavorite = true)
                 )
 
-            comicsDao.insertAll(comics)
+            comicsDao.insertComics(comics)
 
             launch(Dispatchers.IO) {
                 comicsDao.getFavoriteComics().collect {
@@ -145,7 +145,7 @@ internal class ComicsLocalDataTest {
                     makeRandomComic(isFavorite = false)
                 )
 
-            comicsDao.insertAll(comics)
+            comicsDao.insertComics(comics)
 
             launch(Dispatchers.IO) {
                 comicsDao.getFavoriteComics().collect {
@@ -161,10 +161,10 @@ internal class ComicsLocalDataTest {
         runTest {
             val comics = (1..5).map { makeRandomComic(isFavorite = true) }
 
-            comicsDao.insertAll(comics)
+            comicsDao.insertComics(comics)
 
             launch(Dispatchers.IO) {
-                comicsDao.getFavoriteComicById(comicId = comics[2].comicId).collect {
+                comicsDao.getFavoriteComicById(comicId = comics[2].id).collect {
                     assertThat(it).isEqualTo(comics[2])
                     cancel()
                 }
@@ -177,10 +177,10 @@ internal class ComicsLocalDataTest {
         runTest {
             val comics = (1..5).map { makeRandomComic(isFavorite = false) }
 
-            comicsDao.insertAll(comics)
+            comicsDao.insertComics(comics)
 
             launch(Dispatchers.IO) {
-                comicsDao.getFavoriteComicById(comicId = comics[2].comicId).collect {
+                comicsDao.getFavoriteComicById(comicId = comics[2].id).collect {
                     assertThat(it).isNull()
                     cancel()
                 }
@@ -193,11 +193,11 @@ internal class ComicsLocalDataTest {
         runTest {
             val comic = makeRandomComic(isFavorite = false)
 
-            comicsDao.insert(comic = comic)
-            comicsDao.updateFavorite(comicId = comic.comicId, isFavorite = true)
+            comicsDao.insertComic(comic = comic)
+            comicsDao.updateFavorite(comicId = comic.id, isFavorite = true)
 
             launch(Dispatchers.IO) {
-                comicsDao.getFavoriteComicById(comicId = comic.comicId).collect {
+                comicsDao.getFavoriteComicById(comicId = comic.id).collect {
                     assertThat(it.isFavorite).isTrue()
                     cancel()
                 }
@@ -211,8 +211,8 @@ internal class ComicsLocalDataTest {
             val comic1 = makeRandomComic(comicId = 1, isFavorite = true)
             val comic2 = makeRandomComic(comicId = 2, isFavorite = false)
 
-            comicsDao.insert(comic = comic1)
-            comicsDao.updateFavorite(comicId = comic2.comicId, isFavorite = true)
+            comicsDao.insertComic(comic = comic1)
+            comicsDao.updateFavorite(comicId = comic2.id, isFavorite = true)
 
             launch(Dispatchers.IO) {
                 comicsDao.getFavoriteComics().collect {

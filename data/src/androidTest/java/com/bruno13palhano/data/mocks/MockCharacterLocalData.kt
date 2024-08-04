@@ -8,11 +8,11 @@ import kotlinx.coroutines.flow.flowOf
 class MockCharacterLocalData : CharacterLocalData {
     private val characters = mutableListOf<Character>()
 
-    override suspend fun insert(character: Character) {
+    override suspend fun insertCharacter(character: Character) {
         characters.add(character)
     }
 
-    override fun getCharacter(id: Long): Flow<Character?> {
+    override fun getCharacterById(id: Long): Flow<Character?> {
         return flowOf(characters.find { it.id == id })
     }
 

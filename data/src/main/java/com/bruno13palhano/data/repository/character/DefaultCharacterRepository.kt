@@ -22,10 +22,10 @@ internal class DefaultCharacterRepository
             return try {
                 if (!characterLocalData.characterExists(id)) {
                     val character = characterRemoteDataSource.getCharacter(id = id)
-                    characterLocalData.insert(character = character)
+                    characterLocalData.insertCharacter(character = character)
                 }
 
-                characterLocalData.getCharacter(id = id)
+                characterLocalData.getCharacterById(id = id)
             } catch (e: HttpException) {
                 when (e.code()) {
                     404 -> {

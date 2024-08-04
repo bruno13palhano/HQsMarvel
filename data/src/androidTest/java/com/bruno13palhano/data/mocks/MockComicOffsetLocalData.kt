@@ -6,7 +6,7 @@ import com.bruno13palhano.data.model.ComicOffset
 class MockComicOffsetLocalData : ComicOffsetLocalData {
     private var lastOffset: ComicOffset? = null
 
-    override suspend fun insert(comicOffset: ComicOffset) {
+    override suspend fun insertComicOffset(comicOffset: ComicOffset) {
         lastOffset = comicOffset
     }
 

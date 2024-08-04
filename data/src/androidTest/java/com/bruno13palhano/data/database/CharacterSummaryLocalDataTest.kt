@@ -44,17 +44,17 @@ internal class CharacterSummaryLocalDataTest {
     }
 
     @Test
-    fun shouldInsertCharacterSummaryIntoTheDatabase() =
+    fun shouldInsertCharacterSummaryCharacterSummaryIntoTheDatabase() =
         runTest {
             val comic = makeRandomComic()
-            val character = makeRandomCharacterSummary(comicId = comic.comicId)
+            val character = makeRandomCharacterSummary(comicId = comic.id)
 
-            comicsDao.insert(comic)
-            characterSummaryDao.insert(character)
+            comicsDao.insertComic(comic)
+            characterSummaryDao.insertCharacterSummary(character)
 
             assertThat(
                 characterSummaryDao.getCharacterSummaryByComicId(
-                    comicId = comic.comicId,
+                    comicId = comic.id,
                     offset = 0,
                     limit = 1
                 )
@@ -63,19 +63,19 @@ internal class CharacterSummaryLocalDataTest {
         }
 
     @Test
-    fun shouldNotInsertCharacterSummaryIntoTheDatabaseIfItAlreadyExists() =
+    fun shouldNotInsertCharacterSummaryCharacterSummaryIntoTheDatabaseIfItAlreadyExists() =
         runTest {
             val comic = makeRandomComic()
-            val character1 = makeRandomCharacterSummary(comicId = comic.comicId)
-            val character2 = makeRandomCharacterSummary(id = character1.id, comicId = comic.comicId)
+            val character1 = makeRandomCharacterSummary(comicId = comic.id)
+            val character2 = makeRandomCharacterSummary(id = character1.id, comicId = comic.id)
 
-            comicsDao.insert(comic)
-            characterSummaryDao.insert(character1)
-            characterSummaryDao.insert(character2)
+            comicsDao.insertComic(comic)
+            characterSummaryDao.insertCharacterSummary(character1)
+            characterSummaryDao.insertCharacterSummary(character2)
 
             assertThat(
                 characterSummaryDao.getCharacterSummaryByComicId(
-                    comicId = comic.comicId,
+                    comicId = comic.id,
                     offset = 0,
                     limit = 1
                 )
@@ -84,19 +84,19 @@ internal class CharacterSummaryLocalDataTest {
         }
 
     @Test
-    fun shouldInsertAllCharacterSummaryIntoTheDatabase() =
+    fun shouldInsertCharacterSummaryAllCharacterSummaryIntoTheDatabase() =
         runTest {
             val comic = makeRandomComic()
             val characters =
                 (1..10)
-                    .map { makeRandomCharacterSummary(id = it.toLong(), comicId = comic.comicId) }
+                    .map { makeRandomCharacterSummary(id = it.toLong(), comicId = comic.id) }
 
-            comicsDao.insert(comic)
-            characterSummaryDao.insertAll(characters)
+            comicsDao.insertComic(comic)
+            characterSummaryDao.insertCharactersSummary(characters)
 
             assertThat(
                 characterSummaryDao.getCharacterSummaryByComicId(
-                    comicId = comic.comicId,
+                    comicId = comic.id,
                     offset = 0,
                     limit = characters.size
                 )
@@ -110,14 +110,14 @@ internal class CharacterSummaryLocalDataTest {
             val comic = makeRandomComic()
             val characters =
                 (1..20)
-                    .map { makeRandomCharacterSummary(id = it.toLong(), comicId = comic.comicId) }
+                    .map { makeRandomCharacterSummary(id = it.toLong(), comicId = comic.id) }
 
-            comicsDao.insert(comic)
-            characterSummaryDao.insertAll(characters)
+            comicsDao.insertComic(comic)
+            characterSummaryDao.insertCharactersSummary(characters)
 
             assertThat(
                 characterSummaryDao.getCharacterSummaryByComicId(
-                    comicId = comic.comicId,
+                    comicId = comic.id,
                     offset = 10,
                     limit = 10
                 )

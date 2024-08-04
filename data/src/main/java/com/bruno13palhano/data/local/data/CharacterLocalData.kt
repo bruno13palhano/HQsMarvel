@@ -4,9 +4,9 @@ import com.bruno13palhano.data.model.Character
 import kotlinx.coroutines.flow.Flow
 
 internal interface CharacterLocalData {
-    suspend fun insert(character: Character)
+    suspend fun insertCharacter(character: Character)
 
-    fun getCharacter(id: Long): Flow<Character?>
+    fun getCharacterById(id: Long): Flow<Character?>
 
     suspend fun characterExists(id: Long): Boolean
 }

@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -52,7 +53,7 @@ fun CharactersRoute(
     val characters = viewModel.characters.collectAsLazyPagingItems()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-    var currentMessage by remember { mutableStateOf("") }
+    var currentMessage by rememberSaveable { mutableStateOf("") }
     val refreshLabel = stringResource(id = R.string.refresh_label)
 
     CharactersContent(
@@ -101,7 +102,8 @@ private fun CharactersContent(
         listOf(
             stringResource(id = R.string.refresh_error_label),
             stringResource(id = R.string.append_error_label),
-            stringResource(id = R.string.no_characters_label)
+            stringResource(id = R.string.no_characters_label),
+            stringResource(id = R.string.no_more_characters_label)
         )
 
     Scaffold(
@@ -128,9 +130,9 @@ private fun CharactersContent(
 
         LazyColumn(
             modifier =
-                Modifier
-                    .semantics { contentDescription = "List of characters" }
-                    .padding(it),
+            Modifier
+                .semantics { contentDescription = "List of characters" }
+                .padding(it),
             contentPadding = PaddingValues(vertical = 4.dp, horizontal = 4.dp)
         ) {
             items(count = characters.itemCount) { index ->
@@ -171,7 +173,11 @@ private fun CharactersContent(
 
                     loadState.append.endOfPaginationReached -> {
                         showCircularProgress = false
-                        showSnackbar(messages[2]) {}
+                        if (characters.itemCount == 0) {
+                            showSnackbar(messages[2]) {}
+                        } else {
+                            showSnackbar(messages[3]) {}
+                        }
                     }
 
                     else -> {

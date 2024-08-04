@@ -12,6 +12,7 @@
     <string name="favorite_label">Favorite"</string>
     <string name="refresh_label">Refresh</string>
     <string name="no_characters_label">No characters found"</string>
+    <string name="no_more_characters_label">No more characters found"</string>
     <string name="no_comics_label">No comics found"</string>
     <string name="refresh_error_label">Error when refreshing data</string>
     <string name="append_error_label">Error when getting new data</string>

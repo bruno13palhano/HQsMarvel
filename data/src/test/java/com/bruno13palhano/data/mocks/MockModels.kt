@@ -141,6 +141,5 @@ object JSONFactory {
     fun makeCharacterDataWrapperJSON(characterNetResponse: Response<CharacterNet>): String =
         characterNetResponseJSONAdapter.toJson(characterNetResponse)
 
-    fun makeComicDataWrapperJSON(comicNetResponse: Response<ComicNet>): String =
-        comicNetResponseJSONAdapter.toJson(comicNetResponse)
+    fun makeComicDataWrapperJSON(comicNetResponse: Response<ComicNet>): String = comicNetResponseJSONAdapter.toJson(comicNetResponse)
 }

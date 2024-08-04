@@ -9,15 +9,15 @@ import com.bruno13palhano.data.local.data.MediatorComicLocalData
 import com.bruno13palhano.data.local.di.DefaultComic
 import com.bruno13palhano.data.local.di.DefaultComicMediator
 import com.bruno13palhano.data.model.Comic
-import com.bruno13palhano.data.remote.datasource.comics.ComicRemoteDataSource
-import com.bruno13palhano.data.remote.di.DefaultComicRemote
+import com.bruno13palhano.data.remote.datasource.comics.ComicRemote
+import com.bruno13palhano.data.remote.di.ComicRemoteSource
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 internal class DefaultComicsRepository
     @Inject
     constructor(
-        @DefaultComicRemote private val comicRemoteDataSource: ComicRemoteDataSource,
+        @ComicRemoteSource private val comicRemote: ComicRemote,
         @DefaultComicMediator private val mediatorComicLocalData: MediatorComicLocalData,
         @DefaultComic private val comicLocalData: ComicLocalData
     ) : ComicsRepository {
@@ -29,7 +29,7 @@ internal class DefaultComicsRepository
                 remoteMediator =
                     ComicsRemoteMediator(
                         mediatorComicLocalData = mediatorComicLocalData,
-                        comicRemoteDataSource = comicRemoteDataSource
+                        comicRemote = comicRemote
                     )
             ).flow
         }

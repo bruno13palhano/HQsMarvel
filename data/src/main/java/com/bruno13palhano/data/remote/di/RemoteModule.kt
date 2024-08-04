@@ -1,9 +1,9 @@
 package com.bruno13palhano.data.remote.di
 
-import com.bruno13palhano.data.remote.datasource.character.CharacterRemoteDataSource
-import com.bruno13palhano.data.remote.datasource.character.DefaultCharacterRemoteDataSource
-import com.bruno13palhano.data.remote.datasource.comics.ComicRemoteDataSource
-import com.bruno13palhano.data.remote.datasource.comics.DefaultComicRemoteDataSource
+import com.bruno13palhano.data.remote.datasource.character.CharacterRemote
+import com.bruno13palhano.data.remote.datasource.character.DefaultCharacterRemote
+import com.bruno13palhano.data.remote.datasource.comics.ComicRemote
+import com.bruno13palhano.data.remote.datasource.comics.DefaultComicRemote
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -11,19 +11,19 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Qualifier
 
 @Qualifier
-internal annotation class DefaultComicRemote
+internal annotation class ComicRemoteSource
 
 @Qualifier
-internal annotation class DefaultCharacterRemote
+internal annotation class CharacterRemoteSource
 
 @Module
 @InstallIn(SingletonComponent::class)
 internal abstract class RemoteModule {
-    @DefaultComicRemote
+    @ComicRemoteSource
     @Binds
-    abstract fun bindComicRemoteDataSource(comicRemoteDataSource: DefaultComicRemoteDataSource): ComicRemoteDataSource
+    abstract fun bindComicRemote(comicRemote: DefaultComicRemote): ComicRemote
 
-    @DefaultCharacterRemote
+    @CharacterRemoteSource
     @Binds
-    abstract fun bindCharacterRemoteDataSource(characterRemoteDataSource: DefaultCharacterRemoteDataSource): CharacterRemoteDataSource
+    abstract fun bindCharacterRemote(characterRemote: DefaultCharacterRemote): CharacterRemote
 }

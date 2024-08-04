@@ -15,8 +15,8 @@ import com.bruno13palhano.data.mocks.MockApi
 import com.bruno13palhano.data.mocks.makeRandomComic
 import com.bruno13palhano.data.model.Comic
 import com.bruno13palhano.data.remote.Service
-import com.bruno13palhano.data.remote.datasource.comics.ComicRemoteDataSource
-import com.bruno13palhano.data.remote.datasource.comics.DefaultComicRemoteDataSource
+import com.bruno13palhano.data.remote.datasource.comics.ComicRemote
+import com.bruno13palhano.data.remote.datasource.comics.DefaultComicRemote
 import com.bruno13palhano.data.repository.comics.ComicsRemoteMediator
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -42,7 +42,7 @@ internal class ComicRemoteMediatorTest {
 
     private val comics = (1..120).map { makeRandomComic(comicId = it.toLong()) }
     private lateinit var api: Service
-    private lateinit var remoteDataSource: ComicRemoteDataSource
+    private lateinit var remoteDataSource: ComicRemote
     private lateinit var comicsDao: ComicsDao
     private lateinit var comicOffsetDao: ComicOffsetDao
     private lateinit var characterSummaryDao: CharacterSummaryDao
@@ -57,7 +57,7 @@ internal class ComicRemoteMediatorTest {
         comicOffsetDao = database.comicOffsetDao
         characterSummaryDao = database.characterSummaryDao
         api = MockApi(comics = comics)
-        remoteDataSource = DefaultComicRemoteDataSource(service = api)
+        remoteDataSource = DefaultComicRemote(service = api)
 
         mediatorDataSource = DefaultMediatorComicLocalData(database = database)
     }
@@ -66,7 +66,7 @@ internal class ComicRemoteMediatorTest {
     fun tearDown() {
         database.clearAllTables()
         api = MockApi(comics = emptyList())
-        remoteDataSource = DefaultComicRemoteDataSource(service = api)
+        remoteDataSource = DefaultComicRemote(service = api)
         database.close()
     }
 
@@ -77,7 +77,7 @@ internal class ComicRemoteMediatorTest {
                 ComicsRemoteMediator(
                     limit = 15,
                     mediatorComicLocalData = mediatorDataSource,
-                    comicRemoteDataSource = remoteDataSource
+                    comicRemote = remoteDataSource
                 )
             val pagingState =
                 PagingState<Int, Comic>(
@@ -96,13 +96,13 @@ internal class ComicRemoteMediatorTest {
     fun refreshLoadSuccessAndEndOfPaginationWhenNoMoreData() =
         runTest {
             api = MockApi(comics = emptyList())
-            remoteDataSource = DefaultComicRemoteDataSource(service = api)
+            remoteDataSource = DefaultComicRemote(service = api)
 
             val remoteMediator =
                 ComicsRemoteMediator(
                     limit = 15,
                     mediatorComicLocalData = mediatorDataSource,
-                    comicRemoteDataSource = remoteDataSource
+                    comicRemote = remoteDataSource
                 )
             val pagingState =
                 PagingState<Int, Comic>(
@@ -125,7 +125,7 @@ internal class ComicRemoteMediatorTest {
                 ComicsRemoteMediator(
                     limit = -1,
                     mediatorComicLocalData = mediatorDataSource,
-                    comicRemoteDataSource = remoteDataSource
+                    comicRemote = remoteDataSource
                 )
             val pagingState =
                 PagingState<Int, Comic>(

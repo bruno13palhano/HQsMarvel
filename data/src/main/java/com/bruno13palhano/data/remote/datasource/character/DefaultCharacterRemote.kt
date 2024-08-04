@@ -4,11 +4,11 @@ import com.bruno13palhano.data.model.Character
 import com.bruno13palhano.data.remote.Service
 import javax.inject.Inject
 
-internal class DefaultCharacterRemoteDataSource
+internal class DefaultCharacterRemote
     @Inject
     constructor(
         private val service: Service
-    ) : CharacterRemoteDataSource {
+    ) : CharacterRemote {
         override suspend fun getCharacter(id: Long): Character {
             val characterNet = service.getCharacter(id = id).data.results[0]
 

@@ -6,7 +6,7 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import com.bruno13palhano.data.local.data.MediatorComicLocalData
 import com.bruno13palhano.data.model.Comic
-import com.bruno13palhano.data.remote.datasource.comics.ComicRemoteDataSource
+import com.bruno13palhano.data.remote.datasource.comics.ComicRemote
 import okio.IOException
 import retrofit2.HttpException
 import java.util.concurrent.TimeUnit
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 internal class ComicsRemoteMediator(
     private val limit: Int = 15,
     private val mediatorComicLocalData: MediatorComicLocalData,
-    private val comicRemoteDataSource: ComicRemoteDataSource
+    private val comicRemote: ComicRemote
 ) : RemoteMediator<Int, Comic>() {
     override suspend fun initialize(): InitializeAction {
         val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS)
@@ -55,7 +55,7 @@ internal class ComicsRemoteMediator(
                     lastOffset ?: 0
                 }
 
-            val response = comicRemoteDataSource.getComics(currentOffset, limit)
+            val response = comicRemote.getComics(currentOffset, limit)
             val endOfPaginationReached = response.isEmpty()
 
             mediatorComicLocalData.insertComicsAndRelatedData(

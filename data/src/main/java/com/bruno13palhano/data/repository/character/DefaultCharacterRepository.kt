@@ -3,8 +3,8 @@ package com.bruno13palhano.data.repository.character
 import com.bruno13palhano.data.local.data.CharacterLocalData
 import com.bruno13palhano.data.local.di.DefaultCharacter
 import com.bruno13palhano.data.model.Character
-import com.bruno13palhano.data.remote.datasource.character.CharacterRemoteDataSource
-import com.bruno13palhano.data.remote.di.DefaultCharacterRemote
+import com.bruno13palhano.data.remote.datasource.character.CharacterRemote
+import com.bruno13palhano.data.remote.di.CharacterRemoteSource
 import com.bruno13palhano.data.repository.utils.CodeInfoException
 import com.bruno13palhano.data.repository.utils.ErrorCode
 import kotlinx.coroutines.flow.Flow
@@ -15,13 +15,13 @@ import javax.inject.Inject
 internal class DefaultCharacterRepository
     @Inject
     constructor(
-        @DefaultCharacterRemote private val characterRemoteDataSource: CharacterRemoteDataSource,
+        @CharacterRemoteSource private val characterRemote: CharacterRemote,
         @DefaultCharacter private val characterLocalData: CharacterLocalData
     ) : CharacterRepository {
         override suspend fun getCharacter(id: Long): Flow<Character?> {
             return try {
                 if (!characterLocalData.characterExists(id)) {
-                    val character = characterRemoteDataSource.getCharacter(id = id)
+                    val character = characterRemote.getCharacter(id = id)
                     characterLocalData.insertCharacter(character = character)
                 }
 

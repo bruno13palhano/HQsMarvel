@@ -1,6 +1,7 @@
 package com.bruno13palhano.hqsmarvel.ui.screens.characters
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -52,40 +53,12 @@ fun CharactersRoute(
 
     val characters = viewModel.characters.collectAsLazyPagingItems()
     val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
-    var currentMessage by rememberSaveable { mutableStateOf("") }
-    val refreshLabel = stringResource(id = R.string.refresh_label)
 
     CharactersContent(
         characters = characters,
         snackbarHostState = snackbarHostState,
         navigateBack = navigateBack,
-        onItemClick = onItemClick,
-        showSnackbar = { message, retry ->
-            if (currentMessage == message) return@CharactersContent
-
-            currentMessage = message
-
-            coroutineScope.launch {
-                val action =
-                    snackbarHostState.showSnackbar(
-                        message = message,
-                        actionLabel = refreshLabel,
-                        duration = SnackbarDuration.Indefinite,
-                        withDismissAction = true
-                    )
-                when (action) {
-                    SnackbarResult.ActionPerformed -> {
-                        currentMessage = ""
-                        retry()
-                    }
-
-                    else -> {
-                        return@launch
-                    }
-                }
-            }
-        }
+        onItemClick = onItemClick
     )
 }
 
@@ -95,16 +68,16 @@ private fun CharactersContent(
     characters: LazyPagingItems<CharacterSummary>,
     snackbarHostState: SnackbarHostState,
     onItemClick: (id: Long) -> Unit,
-    showSnackbar: (message: String, retry: () -> Unit) -> Unit,
     navigateBack: () -> Unit
 ) {
     val messages =
         listOf(
-            stringResource(id = R.string.refresh_error_label),
-            stringResource(id = R.string.append_error_label),
             stringResource(id = R.string.no_characters_label),
             stringResource(id = R.string.no_more_characters_label)
         )
+    var showCircularProgress by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+    var currentMessage by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -126,28 +99,26 @@ private fun CharactersContent(
             )
         }
     ) {
-        var showCircularProgress by remember { mutableStateOf(false) }
-
         LazyColumn(
             modifier =
-            Modifier
-                .semantics { contentDescription = "List of characters" }
-                .padding(it),
+                Modifier
+                    .semantics { contentDescription = "List of characters" }
+                    .padding(it),
             contentPadding = PaddingValues(vertical = 4.dp, horizontal = 4.dp)
         ) {
             items(count = characters.itemCount) { index ->
                 characters[index]?.let { character ->
-                    ListItem(
-                        headlineContent = {
-                            ElevatedCard(onClick = { onItemClick(character.id) }) {
-                                ListItem(
-                                    headlineContent = {
-                                        Text(text = "${character.name}")
-                                    }
-                                )
-                            }
-                        }
-                    )
+                    ElevatedCard(
+                        modifier = Modifier.padding(4.dp),
+                        onClick = { onItemClick(character.id) }
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp, vertical = 16.dp)
+                                .fillMaxWidth(),
+                            text = "${character.name}"
+                        )
+                    }
                 }
             }
 
@@ -157,26 +128,33 @@ private fun CharactersContent(
                         item { showCircularProgress = true }
                     }
 
-                    loadState.refresh is LoadState.Error -> {
-                        showCircularProgress = false
-                        showSnackbar(messages[0]) { retry() }
-                    }
-
                     loadState.append is LoadState.Loading -> {
                         item { showCircularProgress = true }
                     }
 
-                    loadState.append is LoadState.Error -> {
-                        showCircularProgress = false
-                        showSnackbar(messages[1]) { retry() }
-                    }
-
                     loadState.append.endOfPaginationReached -> {
                         showCircularProgress = false
-                        if (characters.itemCount == 0) {
-                            showSnackbar(messages[2]) {}
-                        } else {
-                            showSnackbar(messages[3]) {}
+                        val message = if (characters.itemCount == 0) messages[0] else messages[1]
+
+                        coroutineScope.launch {
+                            if (currentMessage == message) return@launch
+                            currentMessage = message
+
+                            val action =
+                                snackbarHostState.showSnackbar(
+                                    message = message,
+                                    duration = SnackbarDuration.Indefinite,
+                                    withDismissAction = true
+                                )
+                            when (action) {
+                                SnackbarResult.ActionPerformed -> {
+                                    refresh()
+                                }
+
+                                else -> {
+                                    return@launch
+                                }
+                            }
                         }
                     }
 

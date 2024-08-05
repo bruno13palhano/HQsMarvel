@@ -62,6 +62,7 @@ class MockApi(
 
         return Response(
             copyright = "",
+            attributionText = "",
             data =
                 DataContainer(
                     results =

@@ -57,6 +57,7 @@ private fun FavoriteComicsContent(
                     title = comic.title,
                     description = comic.description,
                     thumbnail = comic.thumbnail,
+                    attribution = comic.attributionText,
                     enableDelete = true,
                     onDeleteItemClick = { onDeleteItemClick(comic) }
                 )

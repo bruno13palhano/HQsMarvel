@@ -21,8 +21,22 @@ internal class DefaultCharacterRepository
         override suspend fun getCharacter(id: Long): Flow<Character?> {
             return try {
                 if (!characterLocalData.characterExists(id)) {
-                    val character = characterRemote.getCharacter(id = id)
-                    characterLocalData.insertCharacter(character = character)
+                    val response = characterRemote.getCharacter(id = id)
+                    val copyright = response.copyright
+                    val attributionText = response.attributionText
+                    val characterNet = response.data.results[0]
+
+                    characterLocalData.insertCharacter(
+                        character =
+                            Character(
+                                id = characterNet.id,
+                                name = characterNet.name,
+                                description = characterNet.description,
+                                thumbnail = characterNet.thumbnail?.path + "." + characterNet.thumbnail?.extension,
+                                copyright = copyright,
+                                attributionText = attributionText
+                            )
+                    )
                 }
 
                 characterLocalData.getCharacterById(id = id)

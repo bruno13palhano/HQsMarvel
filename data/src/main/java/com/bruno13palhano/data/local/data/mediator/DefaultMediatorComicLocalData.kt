@@ -6,6 +6,7 @@ import com.bruno13palhano.data.local.database.HQsMarvelDatabase
 import com.bruno13palhano.data.model.CharacterSummary
 import com.bruno13palhano.data.model.Comic
 import com.bruno13palhano.data.model.ComicOffset
+import com.bruno13palhano.data.remote.model.Response
 import com.bruno13palhano.data.remote.model.comics.ComicNet
 import javax.inject.Inject
 
@@ -19,7 +20,7 @@ internal class DefaultMediatorComicLocalData
             nextOffset: Int,
             endOfPaginationReached: Boolean,
             isRefresh: Boolean,
-            comicNets: List<ComicNet>
+            comicNets: Response<ComicNet>
         ) {
             database.withTransaction {
                 if (isRefresh) {
@@ -28,16 +29,20 @@ internal class DefaultMediatorComicLocalData
 
                 val nextPage = if (endOfPaginationReached) null else page + 1
 
+                val copyright = comicNets.copyright
+                val attributionText = comicNets.attributionText
                 val comicList: MutableList<Comic> = mutableListOf()
                 val characterList: MutableList<CharacterSummary> = mutableListOf()
 
-                comicNets.map { comicNet ->
+                comicNets.data.results.map { comicNet ->
                     comicList.add(
                         Comic(
                             id = comicNet.id,
                             title = comicNet.title ?: "",
                             description = comicNet.description ?: "",
                             thumbnail = comicNet.thumbnail?.path + "." + comicNet.thumbnail?.extension,
+                            copyright = copyright,
+                            attributionText = attributionText,
                             page = page,
                             nextPage = nextPage,
                             isFavorite = false,

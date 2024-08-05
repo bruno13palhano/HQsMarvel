@@ -7,6 +7,8 @@ import com.bruno13palhano.data.local.data.MediatorComicLocalData
 import com.bruno13palhano.data.model.CharacterSummary
 import com.bruno13palhano.data.model.Comic
 import com.bruno13palhano.data.model.ComicOffset
+import com.bruno13palhano.data.remote.model.Response
+import com.bruno13palhano.data.remote.model.comics.ComicNet
 
 internal class MockMediatorComicLocalData(
     private val comicLocalData: ComicLocalData,
@@ -18,7 +20,7 @@ internal class MockMediatorComicLocalData(
         nextOffset: Int,
         endOfPaginationReached: Boolean,
         isRefresh: Boolean,
-        comicNets: List<com.bruno13palhano.data.remote.model.comics.ComicNet>
+        comicNets: Response<ComicNet>
     ) {
         if (isRefresh) {
             comicLocalData.clearComics()
@@ -29,13 +31,15 @@ internal class MockMediatorComicLocalData(
         val comicList: MutableList<Comic> = mutableListOf()
         val characterList: MutableList<CharacterSummary> = mutableListOf()
 
-        comicNets.map { comicNet ->
+        comicNets.data.results.map { comicNet ->
             comicList.add(
                 Comic(
                     id = comicNet.id,
                     title = comicNet.title ?: "",
                     description = comicNet.description ?: "",
                     thumbnail = comicNet.thumbnail?.path + "." + comicNet.thumbnail?.extension,
+                    copyright = comicNets.copyright,
+                    attributionText = comicNets.attributionText,
                     page = page,
                     nextPage = nextPage,
                     isFavorite = false,

@@ -23,6 +23,8 @@ fun makeRandomComic(
     title: String = getRandomString(),
     description: String = getRandomString(),
     thumbnail: String = getRandomString(),
+    copyright: String = getRandomString(),
+    attributionText: String = getRandomString(),
     page: Int = getRandomInt(),
     nextPage: Int? = getRandomInt(),
     isFavorite: Boolean = Random.nextBoolean(),
@@ -32,6 +34,8 @@ fun makeRandomComic(
     title = title,
     description = description,
     thumbnail = thumbnail,
+    copyright = copyright,
+    attributionText = attributionText,
     page = page,
     nextPage = nextPage,
     isFavorite = isFavorite,
@@ -42,12 +46,16 @@ fun makeRandomCharacter(
     id: Long = getRandomLong(),
     name: String = getRandomString(),
     description: String = getRandomString(),
-    thumbnail: String = getRandomString()
+    thumbnail: String = getRandomString(),
+    copyright: String = getRandomString(),
+    attributionText: String = getRandomString()
 ) = Character(
     id = id,
     name = name,
     description = description,
-    thumbnail = thumbnail
+    thumbnail = thumbnail,
+    copyright = copyright,
+    attributionText = attributionText
 )
 
 fun makeRandomCharacterSummary(
@@ -66,17 +74,21 @@ fun makeRandomCharacterSummary(
 
 fun makeRandomCharacterDataWrapper(
     copyright: String = getRandomString(),
+    attributionText: String = getRandomString(),
     data: DataContainer<CharacterNet> = makeRandomCharacterDataContainer()
 ) = Response(
     copyright = copyright,
+    attributionText = attributionText,
     data = data
 )
 
 fun makeRandomComicDataWrapper(
     copyright: String = getRandomString(),
+    attributionText: String = getRandomString(),
     data: DataContainer<ComicNet> = makeRandomComicDataContainer()
 ) = Response(
     copyright = copyright,
+    attributionText = attributionText,
     data = data
 )
 
@@ -133,7 +145,7 @@ object JSONFactory {
     private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
     private val characterNetResponseType = Types.newParameterizedType(Response::class.java, CharacterNet::class.java)
-    private val comicResponseType = Types.newParameterizedType(Response::class.java, Comic::class.java)
+    private val comicResponseType = Types.newParameterizedType(Response::class.java, ComicNet::class.java)
 
     private val characterNetResponseJSONAdapter = moshi.adapter<Response<CharacterNet>>(characterNetResponseType)
     private val comicNetResponseJSONAdapter = moshi.adapter<Response<ComicNet>>(comicResponseType)

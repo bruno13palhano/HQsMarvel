@@ -23,6 +23,7 @@ internal object TestDatabaseModule {
             HQsMarvelDatabase::class.java
         )
             .allowMainThreadQueries()
+            .fallbackToDestructiveMigration()
             .build()
     }
 }

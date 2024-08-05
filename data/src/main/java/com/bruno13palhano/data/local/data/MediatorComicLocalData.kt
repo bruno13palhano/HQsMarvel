@@ -3,6 +3,7 @@ package com.bruno13palhano.data.local.data
 import com.bruno13palhano.data.model.CharacterSummary
 import com.bruno13palhano.data.model.Comic
 import com.bruno13palhano.data.model.ComicOffset
+import com.bruno13palhano.data.remote.model.Response
 import com.bruno13palhano.data.remote.model.comics.ComicNet
 
 internal interface MediatorComicLocalData {
@@ -28,7 +29,7 @@ internal interface MediatorComicLocalData {
         nextOffset: Int,
         endOfPaginationReached: Boolean,
         isRefresh: Boolean,
-        comicNets: List<ComicNet>
+        comicNets: Response<ComicNet>
     )
 
     /**

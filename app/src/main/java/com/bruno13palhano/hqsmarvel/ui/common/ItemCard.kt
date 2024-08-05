@@ -14,8 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -62,7 +60,7 @@ fun ItemCard(
         Text(
             modifier =
                 Modifier
-                    .padding(vertical = 8.dp, horizontal = 8.dp)
+                    .padding(8.dp)
                     .fillMaxWidth(),
             text = title ?: "",
             maxLines = 1,
@@ -70,17 +68,9 @@ fun ItemCard(
             overflow = TextOverflow.Ellipsis
         )
 
-        Text(
-            modifier =
-                Modifier
-                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
-                    .fillMaxWidth(),
-            text = copyright ?: "",
-            maxLines = 1,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.labelSmall,
-            fontStyle = FontStyle.Italic,
-            overflow = TextOverflow.Ellipsis
+        FooterItem(
+            modifier = Modifier.padding(8.dp).fillMaxWidth(),
+            text = copyright ?: ""
         )
     }
 }

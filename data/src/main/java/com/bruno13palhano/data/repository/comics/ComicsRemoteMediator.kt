@@ -56,7 +56,7 @@ internal class ComicsRemoteMediator(
                 }
 
             val response = comicRemote.getComics(currentOffset, limit)
-            val endOfPaginationReached = response.isEmpty()
+            val endOfPaginationReached = response.data.results.isEmpty()
 
             mediatorComicLocalData.insertComicsAndRelatedData(
                 page = page,

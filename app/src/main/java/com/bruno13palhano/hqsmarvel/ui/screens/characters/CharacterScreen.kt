@@ -43,6 +43,7 @@ import com.bruno13palhano.data.repository.utils.ErrorCode
 import com.bruno13palhano.hqsmarvel.R
 import com.bruno13palhano.hqsmarvel.ui.common.CircularProgress
 import com.bruno13palhano.hqsmarvel.ui.common.ErrorMessages
+import com.bruno13palhano.hqsmarvel.ui.common.FooterItem
 import com.bruno13palhano.hqsmarvel.ui.common.UIState
 
 @Composable
@@ -217,6 +218,11 @@ private fun CharacterContent(
                             .fillMaxWidth(),
                     text = ch.description ?: "",
                     style = MaterialTheme.typography.bodyMedium
+                )
+
+                FooterItem(
+                    modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                    text = ch.attributionText ?: ""
                 )
             }
         }

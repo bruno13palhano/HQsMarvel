@@ -8,6 +8,7 @@ import com.bruno13palhano.data.remote.model.Response
 import com.bruno13palhano.data.remote.model.Thumbnail
 import com.bruno13palhano.data.remote.model.charactersummary.CharacterListNet
 import com.bruno13palhano.data.remote.model.charactersummary.CharacterSummaryNet
+import com.bruno13palhano.data.remote.model.comics.ComicNet
 import kotlin.random.Random
 
 private const val LENGTH = 10
@@ -18,6 +19,8 @@ fun makeRandomComic(
     title: String = getRandomString(),
     description: String = getRandomString(),
     thumbnail: String = getRandomString(),
+    copyright: String = getRandomString(),
+    attributionText: String = getRandomString(),
     page: Int = getRandomInt(),
     nextPage: Int? = getRandomInt(),
     isFavorite: Boolean = Random.nextBoolean(),
@@ -27,6 +30,8 @@ fun makeRandomComic(
     title = title,
     description = description,
     thumbnail = thumbnail,
+    copyright = copyright,
+    attributionText = attributionText,
     page = page,
     nextPage = nextPage,
     isFavorite = isFavorite,
@@ -37,12 +42,16 @@ fun makeRandomCharacter(
     id: Long = getRandomLong(),
     name: String = getRandomString(),
     description: String = getRandomString(),
-    thumbnail: String = getRandomString()
+    thumbnail: String = getRandomString(),
+    copyright: String = getRandomString(),
+    attributionText: String = getRandomString()
 ) = Character(
     id = id,
     name = name,
     description = description,
-    thumbnail = thumbnail
+    thumbnail = thumbnail,
+    copyright = copyright,
+    attributionText = attributionText
 )
 
 fun makeRandomCharacterSummary(
@@ -61,16 +70,18 @@ fun makeRandomCharacterSummary(
 
 fun makeRandomComicDataWrapper(
     copyright: String = getRandomString(),
-    data: DataContainer<com.bruno13palhano.data.remote.model.comics.ComicNet> = makeRandomComicDataContainer()
+    attributionText: String = getRandomString(),
+    data: DataContainer<ComicNet> = makeRandomComicDataContainer()
 ) = Response(
     copyright = copyright,
+    attributionText = attributionText,
     data = data
 )
 
 fun makeRandomComicDataContainer(
-    results: List<com.bruno13palhano.data.remote.model.comics.ComicNet> =
+    results: List<ComicNet> =
         makeRandomComicList().map { comic ->
-            com.bruno13palhano.data.remote.model.comics.ComicNet(
+            ComicNet(
                 id = comic.id,
                 title = comic.title,
                 description = comic.description,

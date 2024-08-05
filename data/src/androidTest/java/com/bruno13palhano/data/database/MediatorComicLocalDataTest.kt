@@ -7,6 +7,8 @@ import com.bruno13palhano.data.mocks.getRandomInt
 import com.bruno13palhano.data.mocks.getRandomString
 import com.bruno13palhano.data.mocks.makeRandomCharacterSummary
 import com.bruno13palhano.data.mocks.makeRandomComic
+import com.bruno13palhano.data.mocks.makeRandomComicDataContainer
+import com.bruno13palhano.data.mocks.makeRandomComicDataWrapper
 import com.bruno13palhano.data.model.CharacterSummary
 import com.bruno13palhano.data.model.Comic
 import com.bruno13palhano.data.remote.model.Thumbnail
@@ -70,7 +72,13 @@ internal class MediatorComicLocalDataTest {
                 nextOffset = 15,
                 endOfPaginationReached = false,
                 isRefresh = true,
-                comicNets = mapComicToComicNet(comics, characters)
+                comicNets =
+                    makeRandomComicDataWrapper(
+                        data =
+                            makeRandomComicDataContainer(
+                                results = mapComicToComicNet(comics, characters)
+                            )
+                    )
             )
 
             val comicsResult = database.comicsDao.getComics()

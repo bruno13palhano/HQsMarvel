@@ -15,6 +15,10 @@ data class Comic(
     val description: String?,
     @SerialName("thumbnail")
     val thumbnail: String?,
+    @SerialName("copyright")
+    val copyright: String?,
+    @SerialName("attributionText")
+    val attributionText: String?,
     @SerialName("page")
     val page: Int,
     @SerialName("nextPage")

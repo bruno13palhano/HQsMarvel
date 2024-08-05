@@ -16,6 +16,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.bruno13palhano.hqsmarvel.R
@@ -35,6 +37,7 @@ fun Details(
     title: String?,
     description: String?,
     thumbnail: String?,
+    attribution: String?,
     enableDelete: Boolean = false,
     onDeleteItemClick: () -> Unit = {}
 ) {
@@ -45,59 +48,66 @@ fun Details(
                 .padding(vertical = 4.dp)
     ) {
         Box {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Image(
+            Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        modifier =
+                            Modifier
+                                .padding(8.dp)
+                                .size(144.dp)
+                                .clip(RoundedCornerShape(5)),
+                        painter = rememberAsyncImagePainter(model = thumbnail),
+                        contentDescription = stringResource(id = R.string.image_label),
+                        contentScale = ContentScale.Crop
+                    )
+
+                    Column(verticalArrangement = Arrangement.Center) {
+                        Text(
+                            modifier =
+                                Modifier
+                                    .padding(
+                                        top = 8.dp,
+                                        end = 8.dp,
+                                        bottom = 4.dp
+                                    )
+                                    .fillMaxWidth(),
+                            text = title ?: "",
+                            style = MaterialTheme.typography.titleSmall,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+
+                        Text(
+                            modifier =
+                                Modifier
+                                    .padding(
+                                        top = 4.dp,
+                                        end = 8.dp,
+                                        bottom = 8.dp
+                                    )
+                                    .fillMaxWidth(),
+                            text = description ?: "",
+                            style = MaterialTheme.typography.bodySmall,
+                            maxLines = 6,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+
+                FooterItem(
                     modifier =
                         Modifier
-                            .padding(8.dp)
-                            .size(144.dp)
-                            .clip(RoundedCornerShape(5)),
-                    painter = rememberAsyncImagePainter(model = thumbnail),
-                    contentDescription = stringResource(id = R.string.image_label),
-                    contentScale = ContentScale.Crop
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                    text = attribution ?: ""
                 )
-
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        modifier =
-                            Modifier
-                                .padding(
-                                    start = 8.dp,
-                                    top = 8.dp,
-                                    end = 8.dp,
-                                    bottom = 4.dp
-                                )
-                                .fillMaxWidth(),
-                        text = title ?: "",
-                        style = MaterialTheme.typography.titleSmall,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                    Text(
-                        modifier =
-                            Modifier
-                                .padding(
-                                    start = 8.dp,
-                                    top = 4.dp,
-                                    end = 8.dp,
-                                    bottom = 8.dp
-                                )
-                                .fillMaxWidth(),
-                        text = description ?: "",
-                        style = MaterialTheme.typography.bodySmall,
-                        maxLines = 6,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
             }
 
             if (enableDelete) {
                 IconButton(
-                    modifier = Modifier.align(Alignment.TopEnd),
+                    modifier =
+                        Modifier
+                            .align(Alignment.TopEnd),
                     onClick = onDeleteItemClick
                 ) {
                     Icon(
@@ -106,6 +116,26 @@ fun Details(
                     )
                 }
             }
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun DetailsPreview() {
+    MaterialTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Details(
+                title = "test",
+                description = "test",
+                thumbnail = "",
+                attribution = "Data provide by Marvel. © 2024 MARVEL",
+                enableDelete = true,
+                onDeleteItemClick = {}
+            )
         }
     }
 }

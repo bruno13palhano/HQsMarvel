@@ -70,6 +70,7 @@ import coil.request.ImageRequest
 import com.bruno13palhano.data.model.Comic
 import com.bruno13palhano.hqsmarvel.R
 import com.bruno13palhano.hqsmarvel.ui.common.CircularProgress
+import com.bruno13palhano.hqsmarvel.ui.common.FooterItem
 import com.bruno13palhano.hqsmarvel.ui.common.ItemCard
 
 @Composable
@@ -211,11 +212,11 @@ private fun HomeContent(
                                                     RoundedCornerShape(5)
                                                 )
                                         )
-                                        .height(240.dp),
+                                        .height(272.dp),
                                 id = comic.id,
                                 title = comic.title,
                                 thumbnail = comic.thumbnail,
-                                copyright = "© 2024 MARVEL",
+                                copyright = comic.copyright,
                                 onClick = {
                                     selectedComic = comic
                                     showBottomMenu(false)
@@ -402,6 +403,11 @@ fun SharedTransitionScope.ComicDetailsScreen(
                             )
                         }
                     }
+
+                    FooterItem(
+                        modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                        text = targetComic.attributionText ?: ""
+                    )
                 }
             }
         }

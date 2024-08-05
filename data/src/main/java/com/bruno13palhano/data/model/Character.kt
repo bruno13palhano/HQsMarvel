@@ -14,5 +14,9 @@ data class Character(
     @SerialName("description")
     val description: String?,
     @SerialName("thumbnail")
-    val thumbnail: String?
+    val thumbnail: String?,
+    @SerialName("copyright")
+    val copyright: String?,
+    @SerialName("attributionText")
+    val attributionText: String?
 )

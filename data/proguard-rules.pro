@@ -19,3 +19,22 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+#keep repository related classes and annotations
+-keep class com.bruno13palhano.data.di.CharacterRep
+-keep class com.bruno13palhano.data.di.CharacterSummaryRep
+-keep class com.bruno13palhano.data.di.ComicsRep
+-keep class com.bruno13palhano.data.repository.** { *; }
+
+#keep remote data related classes
+-keep class com.bruno13palhano.data.remote.** { *; }
+
+#keep local data related classes and annotations
+-keep class com.bruno13palhano.data.local.di.DefaultCharacter
+-keep class com.bruno13palhano.data.local.di.DefaultCharacterSummary
+-keep class com.bruno13palhano.data.local.di.DefaultComic
+-keep class com.bruno13palhano.data.local.di.DefaultComicMediator
+-keep class com.bruno13palhano.data.local.** { *; }
+
+#keep model related classes
+-keep class com.bruno13palhano.data.model.** { *; }

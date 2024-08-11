@@ -1,5 +1,5 @@
 [versions]
-agp = "8.5.1"
+agp = "8.5.2"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -10,27 +10,27 @@ activityCompose = "1.9.1"
 composeBom = "2024.06.00"
 appcompat = "1.7.0"
 material = "1.12.0"
-converterMoshi = "2.9.0"
-moshiKotlin = "1.15.0"
+converterMoshi = "2.11.0"
+moshiKotlin = "1.15.1"
 okhttp = "4.12.0"
-retrofit = "2.9.0"
-hiltAndroidCompiler = "2.51.1"
+retrofit = "2.11.0"
+hiltAndroidCompiler = "2.52"
 hiltCompiler = "1.2.0"
 hiltWork = "1.2.0"
 secretsGradle = "2.0.1"
 kspVersion = "2.0.0-1.0.22"
 navVersion = "2.8.0-beta06"
-serializationVersion = "1.7.0"
+serializationVersion = "1.7.1"
 ktlintVersion = "12.1.1"
-coilVersion = "2.6.0"
-pagingVersion = "3.3.1"
+coilVersion = "2.7.0"
+pagingVersion = "3.3.2"
 roomVersion = "2.6.1"
 materialIconsExtended = "1.6.8"
-coroutinesVersion = "1.8.0"
-truthVersion = "1.1.3"
+coroutinesVersion = "1.8.1"
+truthVersion = "1.4.4"
 turbineVerson = "1.1.0"
-mockitoCoreVersion = "5.3.1"
-mockitoKotlinVersion = "4.1.0"
+mockitoCoreVersion = "5.12.0"
+mockitoKotlinVersion = "5.4.0"
 mockWebServerVersion = "4.12.0"
 
 [libraries]
@@ -89,6 +89,5 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroidCompiler"}
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsGradle" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
-safe-args = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navVersion" }
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintVersion" }

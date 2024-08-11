@@ -15,10 +15,18 @@
 * baseUrl=https://gateway.marvel.com/v1/public/
 * apiPublicKey={your public key}
 * apiPrivateKey={your private key}
+<p> If you don't already have API keys, learn how to get them here: https://developer.marvel.com/documentation/getting_started </p>
 
 ## Build
-#### <p>You can run the project directly in Android Studio, or to build the APK from the command line and immediately install it on a running emulator or connected device, invoke:</p>
+#### <p>You can run the debug version directly in Android Studio by selecting the debug build variant, or to build the APK from the command line and immediately install it on a running emulator or connected device, invoke:</p>
 * gradlew installDebug
+#### <p>To building a release version create a file named keystore.properties in the root directory of your project. This file should contain your signing information, as follows: <p/>
+* RELEASE_STORE_FILE={your store file location}
+* RELEASE_STORE_PASSWORD={your store password}
+* RELEASE_KEY_ALIAS={your key alias}
+* RELEASE_KEY_PASSWORD={your key password}
+#### <p>Then you can run it directly in Android Studio by selecting the release build variant or by calling it from the command line:</p>
+* gradlew installRelease
 
 ## Versions
 * Kotlin 2.0.0
